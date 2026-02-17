@@ -19,71 +19,92 @@
             --dark-secondary: #141414;
             --light: #ffffff;
             --gray: #a0a0a0;
+            --accent: #ffd600;
         }
 
         body {
-            font-family: 'IBM Plex Sans Devanagari', sans-serif;
+            font-family: 'IBM Plex Sans Devanagari', 'Poppins', sans-serif;
             background: var(--dark);
             color: var(--light);
             margin: 0;
+            overflow-x: hidden;
         }
 
-        /* Loading & Auth Styles */
-        #loadingScreen { position: fixed; inset: 0; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { background: var(--dark-secondary); padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        /* Loading Animation */
+        #loadingScreen { position: fixed; inset: 0; background: var(--dark); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--dark-secondary); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Auth UI */
+        .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(circle at top right, #300, #000); }
+        .auth-box { background: var(--dark-secondary); padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .auth-box h2 { text-align: center; margin-bottom: 30px; font-size: 28px; color: var(--primary); }
         
-        .form-group { margin-bottom: 20px; }
-        .form-input { width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid transparent; border-radius: 8px; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .form-input { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; margin-bottom: 15px; font-size: 16px; transition: 0.3s; box-sizing: border-box; }
+        .form-input:focus { border-color: var(--primary); outline: none; background: #222; }
+        
+        .btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #d00; transform: translateY(-2px); }
         
         /* App Layout */
-        .app-container { display: none; padding-top: 80px; }
-        header { position: fixed; top: 0; width: 100%; height: 70px; background: var(--dark-secondary); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .card { background: var(--dark-secondary); padding: 20px; border-radius: 16px; margin-bottom: 20px; border-left: 5px solid var(--primary); }
+        .app-container { display: none; padding-top: 90px; max-width: 1200px; margin: 0 auto; padding-inline: 20px; }
+        header { position: fixed; top: 0; left: 0; width: 100%; height: 75px; background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-sizing: border-box; border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        
+        .card { background: var(--dark-secondary); padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .profile-card { border-left: 6px solid var(--primary); }
+        .ai-card { border-left: 6px solid var(--accent); }
+
+        /* AI Tutor UI */
+        #ai-response { background: #000; padding: 15px; border-radius: 12px; margin-top: 15px; display: none; line-height: 1.6; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen"><h2>लोड हो रहा है...</h2></div>
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: var(--gray);">आपका स्टडी पोर्टल लोड हो रहा है...</p>
+    </div>
 
     <div id="authScreen" class="auth-container">
         <div class="auth-box">
-            <h2 id="authTitle">लॉगिन करें</h2>
+            <h2 id="authTitle"><i class="fas fa-user-graduate"></i> लॉगिन करें</h2>
+            
             <div id="loginForm">
-                <input type="email" id="email" class="form-input" placeholder="ईमेल" style="margin-bottom: 10px;">
-                <input type="password" id="password" class="form-input" placeholder="पासवर्ड" style="margin-bottom: 20px;">
-                <button class="btn" onclick="handleLogin()">Sign In</button>
-                <p style="margin-top:15px; font-size:14px;">खाता नहीं है? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary)">रजिस्टर करें</a></p>
+                <input type="email" id="email" class="form-input" placeholder="ईमेल">
+                <input type="password" id="password" class="form-input" placeholder="पासवर्ड">
+                <button class="btn" onclick="handleLogin()">अंदर जाएँ <i class="fas fa-arrow-right"></i></button>
+                <p style="margin-top:20px; text-align:center; color: var(--gray);">खाता नहीं है? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary); text-decoration:none;">रजिस्टर करें</a></p>
             </div>
             
             <div id="signupForm" class="hidden">
-                <input type="text" id="name" class="form-input" placeholder="पूरा नाम" style="margin-bottom: 10px;">
-                <input type="email" id="s-email" class="form-input" placeholder="ईमेल" style="margin-bottom: 10px;">
-                <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड" style="margin-bottom: 10px;">
-                <select id="s-class" class="form-input" style="margin-bottom: 20px;">
+                <input type="text" id="name" class="form-input" placeholder="पूरा नाम">
+                <input type="email" id="s-email" class="form-input" placeholder="ईमेल">
+                <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड">
+                <select id="s-class" class="form-input">
                     <option value="7">कक्षा 7</option>
                     <option value="10">कक्षा 10</option>
                     <option value="12">कक्षा 12</option>
                     <option value="B.Sc Maths">B.Sc Maths (Shivaji College)</option>
                 </select>
-                <button class="btn" onclick="handleSignup()">Create Account</button>
-                <p style="margin-top:15px; font-size:14px;">पहले से खाता है? <a href="#" onclick="toggleAuth(false)" style="color:var(--primary)">लॉगिन करें</a></p>
+                <button class="btn" onclick="handleSignup()">खाता बनाएँ <i class="fas fa-check"></i></button>
+                <p style="margin-top:20px; text-align:center; color: var(--gray);">पहले से खाता है? <a href="#" onclick="toggleAuth(false)" style="color:var(--primary); text-decoration:none;">लॉगिन करें</a></p>
             </div>
         </div>
     </div>
 
     <div id="appContainer" class="app-container">
         <header>
-            <div style="font-size: 20px; font-weight: bold; color: var(--primary);">AI Study Portal</div>
-            <button onclick="logout()" style="background:none; border:none; color:white; cursor:pointer;">Logout</button>
+            <div style="font-size: 22px; font-weight: bold; color: var(--primary);"><i class="fas fa-brain"></i> AI Study Portal</div>
+            <button onclick="logout()" style="background:#333; border:none; color:white; padding: 8px 15px; border-radius: 8px; cursor:pointer;"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </header>
-        <main style="padding: 20px;" id="mainContent"></main>
+
+        <main id="mainContent">
+            </main>
     </div>
 
     <script>
-        // 1. Firebase Configuration
+        // 1. Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBX6ockYiEQXSfUrpGD8eG-9dk7o6GLksQ",
             authDomain: "ankita-ai-study.firebaseapp.com",
@@ -108,24 +129,26 @@
             }
         });
 
-        // 2. Universal Signup Logic
+        // 2. Universal Signup
         async function handleSignup() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('s-email').value;
             const password = document.getElementById('s-password').value;
             const uClass = document.getElementById('s-class').value;
 
+            if(!name || !email || !password) return alert("कृपया सभी जानकारी भरें");
+
             try {
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
-                // छात्र का डेटा उनकी UID के साथ सेव करना
+                // हर छात्र का अपना डाटा UID के नाम से स्टोर होगा
                 await db.collection('students').doc(cred.user.uid).set({
                     Name: name,
                     Email: email,
                     Class: uClass,
-                    Subject: "General",
+                    Subject: uClass === "B.Sc Maths" ? "Mathematics" : "General Study",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("Account Created!");
+                alert("सफलतापूर्वक रजिस्टर हुआ!");
             } catch (e) { alert(e.message); }
         }
 
@@ -136,31 +159,51 @@
             catch (e) { alert(e.message); }
         }
 
-        // 3. Personalized Data Loading
+        // 3. UI Data Loading
         async function loadUserData(uid) {
             const doc = await db.collection('students').doc(uid).get();
-            const data = doc.exists ? doc.data() : { Name: "Student", Class: "7" };
+            const data = doc.exists ? doc.data() : { Name: "Student", Class: "N/A" };
             
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="card">
-                    <h2>नमस्ते, ${data.Name}!</h2>
-                    <p>कक्षा: ${data.Class}</p>
-                    <p>विषय: ${data.Subject || 'Mathematics'}</p>
+                <div class="card profile-card">
+                    <h2><i class="fas fa-hand-peace" style="color:var(--accent)"></i> नमस्ते, ${data.Name}!</h2>
+                    <p style="color: var(--gray)">आपकी कक्षा: <b style="color:white">${data.Class}</b></p>
+                    <p style="color: var(--gray)">मुख्य विषय: <b style="color:white">${data.Subject}</b></p>
                 </div>
-                <div class="card" style="border-left-color: #ffd600;">
-                    <h3>Quick AI Tutor</h3>
-                    <p>अपने विषय से संबंधित कोई भी सवाल पूछें।</p>
+
+                <div class="card ai-card">
+                    <h3><i class="fas fa-robot"></i> Quick AI Tutor</h3>
+                    <p style="color: var(--gray)">अपने विषय से संबंधित कोई भी सवाल पूछें।</p>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <input type="text" id="ai-input" class="form-input" style="margin-bottom:0" placeholder="यहाँ सवाल लिखें...">
+                        <button onclick="askAI()" class="btn" style="width:100px; padding:0">पूछें</button>
+                    </div>
+                    <div id="ai-response"></div>
                 </div>
             `;
+        }
+
+        function askAI() {
+            const q = document.getElementById('ai-input').value;
+            const res = document.getElementById('ai-response');
+            if(!q) return;
+            
+            res.style.display = "block";
+            res.innerHTML = "<i class='fas fa-spinner fa-spin'></i> AI सोच रहा है...";
+            
+            // यह एक डेमो रिस्पॉन्स है, इसे आप असली Gemini API से जोड़ सकते हैं
+            setTimeout(() => {
+                res.innerHTML = `<b>उत्तर:</b> ${q} एक बहुत अच्छा सवाल है। इसके बारे में विस्तार से जानने के लिए अपनी ${document.getElementById('s-class')?.value || 'अगली'} क्लास के नोट्स पढ़ें।`;
+            }, 1500);
         }
 
         function toggleAuth(showSignup) {
             document.getElementById('loginForm').classList.toggle('hidden', showSignup);
             document.getElementById('signupForm').classList.toggle('hidden', !showSignup);
-            document.getElementById('authTitle').innerText = showSignup ? "नया खाता बनाएँ" : "लॉगिन करें";
+            document.getElementById('authTitle').innerHTML = showSignup ? "<i class='fas fa-user-plus'></i> रजिस्टर करें" : "<i class='fas fa-user-graduate'></i> लॉगिन करें";
         }
 
         function logout() { auth.signOut(); }
