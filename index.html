@@ -3,866 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>अंकिता · AI स्टडी – प्रो विजन</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Devanagari:wght@400;500;600;700&family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>अंकिता · AI स्टडी – स्टेप मोड</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- KaTeX (गणित) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    <!-- Tesseract OCR -->
     <script src="https://unpkg.com/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
-    <!-- PDF export (html2pdf) optional -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
-        /* ---------- मूल शैली (थीम: लाल + काला) ---------- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ---------- स्टाइलिंग (काली और लाल थीम) ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         :root {
-            --primary: #b22222;          /* लाल */
-            --primary-dark: #8b1a1a;
-            --dark: #1e1e1e;              /* काला */
-            --paper: #fffcf7;
-            --border-radius: 24px;
-            --shadow: 0 15px 30px -12px rgba(0,0,0,0.2);
-            --glass: rgba(255, 255, 255, 0.9);
+            --primary: #b22222;          /* गहरा लाल */
+            --dark: #0f0f0f;             /* गहरा काला */
+            --light: #ffffff;
+            --bg-grad: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
-        body {
-            background: linear-gradient(145deg, #d6cbbd, #e6ddd2);
-            font-family: 'Poppins', 'IBM Plex Sans Devanagari', sans-serif;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-        }
+        body { background: var(--bg-grad); color: var(--light); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* कंटेनर */
         .app-container {
-            max-width: 1400px;
-            width: 100%;
-            background: var(--paper);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border: 2px solid var(--primary);
+            width: 100%; max-width: 600px; /* मोबाइल जैसा लुक */
+            background: #1e1e1e;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 2px solid var(--primary);
+            position: relative;
+            min-height: 80vh;
         }
-        /* Header */
+
+        /* हेडर */
         .header {
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 25px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-bottom: 3px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
             position: sticky;
             top: 0;
-            z-index: 1000;
-            flex-wrap: wrap;
-            gap: 12px;
+            z-index: 100;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .brand-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            background: linear-gradient(90deg, var(--primary), var(--dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-        .ai-icon { color: var(--primary); font-size: 1.8rem; }
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .user-badge { font-size: 0.8rem; background: #333; padding: 5px 10px; border-radius: 20px; }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .lang-switch {
-            display: flex;
-            align-items: center;
-            background: var(--dark);
-            padding: 4px;
-            border-radius: 30px;
-            border: 1px solid var(--primary);
-            cursor: pointer;
-            position: relative;
-            width: 100px;
-            height: 38px;
-        }
-        .lang-btn {
-            flex: 1;
-            text-align: center;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #fff;
-            z-index: 2;
-            transition: 0.3s;
-            line-height: 30px;
-        }
-        .lang-slider {
-            position: absolute;
-            width: 46px;
-            height: 30px;
-            background: var(--primary);
-            border-radius: 25px;
-            transition: 0.3s;
-            left: 4px;
-            top: 4px;
-        }
-        .lang-switch.eng .lang-slider {
-            left: 50px;
-        }
-
-        .search-box {
-            background: #eee;
-            padding: 6px 15px;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--primary);
-        }
-        .search-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            padding-left: 8px;
-            min-width: 180px;
-            font-family: 'Poppins', sans-serif;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--dark);
-            color: white;
-            padding: 5px 15px 5px 10px;
-            border-radius: 40px;
-            border: 2px solid var(--primary);
-        }
-        .btn-logout {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 5px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-            border: 1px solid white;
-        }
-        .btn-logout:hover { background: #8b1a1a; transform: scale(1.02); }
-
-        /* नया इंस्टीट्यूट सेलेक्शन ब्लॉक (स्केच 1) */
-        .institution-card {
-            background: white;
-            border-radius: 28px;
-            padding: 25px;
-            margin: 20px 25px 10px;
-            border: 3px solid var(--primary);
-            box-shadow: 6px 6px 0 var(--dark);
-        }
-        .institution-grid {
-            display: flex;
-            flex-wrap: wrap;
+        /* --- स्टेप फॉर्म (जादुई हिस्सा) --- */
+        .setup-wizard {
+            padding: 30px;
+            display: flex; /* यह JS से 'none' होगा */
+            flex-direction: column;
             gap: 20px;
-            align-items: flex-end;
+            height: 100%;
+            justify-content: center;
         }
-        .institution-item {
-            flex: 1 1 200px;
-        }
-        .institution-item label {
-            font-weight: 600;
-            color: var(--dark);
-            display: block;
-            margin-bottom: 5px;
-        }
-        .institution-item select, .institution-item input {
-            width: 100%;
-            padding: 12px 18px;
-            border-radius: 40px;
-            border: 2px solid var(--dark);
-            background: white;
-            font-family: inherit;
-        }
-        .fill-next-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid var(--dark);
-        }
-        .fill-next-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
-        /* AI आउटपुट को तीन कार्ड्स में बाँटना */
-        .ai-output-tabs {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0 10px;
-        }
-        .ai-output-tab {
-            background: white;
-            border: 2px solid var(--dark);
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .ai-output-tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .ai-output-panel {
-            display: none;
-            background: white;
-            border-radius: 24px;
+        .step-box {
+            background: #252525;
             padding: 20px;
-            border-left: 8px solid var(--primary);
-            margin-top: 10px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+            animation: fadeIn 0.5s ease;
+            display: none; /* शुरू में सब छिपा रहेगा */
         }
-        .ai-output-panel.active {
-            display: block;
+        .step-box.active { display: block; } /* जो एक्टिव होगा वही दिखेगा */
+
+        .step-title { font-size: 1.1rem; margin-bottom: 10px; color: #ccc; }
+        select {
+            width: 100%; padding: 12px;
+            background: #333; color: white;
+            border: 1px solid #555; border-radius: 8px;
+            outline: none; font-size: 1rem;
         }
-        /* चैप्टर नेविगेशन */
-        .chapter-nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 15px 0;
+        select:focus { border-color: var(--primary); }
+
+        .next-btn {
+            background: var(--primary); color: white;
+            border: none; padding: 15px;
+            width: 100%; border-radius: 30px;
+            font-size: 1rem; font-weight: bold;
+            cursor: pointer; margin-top: 20px;
+            display: none; /* बटन भी बाद में दिखेगा */
         }
-        .chapter-btn {
-            background: #eee;
-            border: 2px solid var(--dark);
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .chapter-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        /* वैदिक मैथ कार्ड */
-        .vedic-card {
-            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
-            color: white;
-            border-radius: 28px;
+        .next-btn:active { transform: scale(0.98); }
+
+        /* --- मुख्य डैशबोर्ड (शुरू में गायब) --- */
+        .main-dashboard {
+            display: none; /* यह फॉर्म भरने के बाद दिखेगा */
             padding: 20px;
-            margin: 20px 0;
-            border: 3px solid var(--primary);
-            box-shadow: 5px 5px 0 var(--primary-dark);
+            animation: slideUp 0.6s ease;
         }
-        .vedic-trick {
-            background: #2d2d2d;
-            border-radius: 20px;
-            padding: 15px;
-            margin: 10px 0;
-            border-left: 8px solid #b22222;
+
+        .card {
+            background: #252525; padding: 20px;
+            border-radius: 15px; margin-bottom: 20px;
+            border: 1px solid #333;
         }
-        .vedic-calculator {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .card h3 { color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        
+        /* वैदिक मैथ */
+        .vedic-box { background: #2a0a0a; border: 1px solid var(--primary); }
+        .calc-row { display: flex; gap: 10px; margin-top: 10px; }
+        .calc-row input { flex: 1; padding: 10px; border-radius: 20px; border: none; }
+        .calc-row button { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 20px; cursor: pointer; }
+
+        /* एनिमेशन */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* लॉगिन स्क्रीन */
+        .login-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #1e1e1e; z-index: 999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 30px;
         }
-        .vedic-calculator input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 40px;
-            border: 2px solid var(--primary);
-            background: #333;
-            color: white;
-        }
-        .vedic-calculator button {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 40px;
-            font-weight: 600;
-        }
-        /* मॉक टेस्ट में PYQ बैज */
-        .pyq-badge {
-            background: gold;
-            color: black;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-left: 10px;
-        }
-        /* डायग्राम के लिए प्लेसहोल्डर */
-        .interactive-diagram {
-            background: #f0f0f0;
-            border-radius: 30px;
-            padding: 20px;
-            text-align: center;
-            border: 2px dashed var(--primary);
-            margin: 15px 0;
-        }
-        .footer { margin-top:30px; text-align:center; color:#5f4e3c; padding-bottom:20px; }
-        .login-card { background:white; border-radius:28px; padding:30px; max-width:400px; margin:30px auto; border:2px solid var(--primary); box-shadow:6px 6px 0 var(--dark); }
-        #google_translate_element { margin-top:10px; text-align:center; background:white; border-radius:40px; padding:5px; border:2px solid var(--primary); width:fit-content; margin-left:auto; margin-right:auto; }
-        .visually-hidden { position:absolute; left:-9999px; }
-        @media (max-width:700px) {
-            .institution-grid { flex-direction: column; }
-        }
+        .login-input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: white; }
     </style>
 </head>
 <body>
+
 <div class="app-container">
     <header class="header">
-        <div class="logo">
-            <i class="fas fa-microchip ai-icon"></i> 
-            <span class="brand-name" id="brandName">अंकिता · AI Study</span>
-        </div>
-        <div class="header-right">
-            <div class="lang-switch" id="langToggle" onclick="toggleLanguage()">
-                <div class="lang-slider"></div>
-                <div class="lang-btn" id="langHi">HI</div>
-                <div class="lang-btn" id="langEn">EN</div>
-            </div>
-            <div class="search-box" id="globalSearch">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="AI टॉपिक खोजें..." id="globalSearchInput">
-            </div>
-            <div id="userInfo" class="user-info" style="display: none;">
-                <span class="user-tag"><i class="fas fa-user-graduate"></i> <span id="usernameDisplay"></span></span>
-                <button class="btn-logout" id="logoutBtn">लॉगआउट</button>
-            </div>
-        </div>
+        <div class="logo"><i class="fas fa-brain"></i> Ankita AI</div>
+        <div class="user-badge" id="userBadge" style="display:none;">Hi, Vivek</div>
     </header>
-    <div id="google_translate_element" style="margin: 5px auto; text-align: center;"></div>
 
-    <!-- login area -->
-    <div id="loginArea" class="login-card">
-        <h2><i class="fas fa-lock"></i> <span id="loginHeading">अकाउंट में प्रवेश</span></h2>
-        <label for="loginUsername" class="visually-hidden">यूजरनेम</label>
-        <input type="text" id="loginUsername" placeholder="यूजरनेम (जैसे: अंकिता)" value="अंकिता">
-        <label for="loginPassword" class="visually-hidden">पासवर्ड</label>
-        <input type="password" id="loginPassword" placeholder="पासवर्ड" value="123">
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button class="btn btn-primary" id="loginBtn" style="background:var(--primary);border:none;color:white;padding:12px 25px;border-radius:40px;"><i class="fas fa-sign-in-alt"></i> <span id="loginBtnText">लॉगिन</span></button>
-            <button class="btn" id="signupBtn" style="background:var(--dark);color:white;padding:12px 25px;border-radius:40px;"><i class="fas fa-user-plus"></i> <span id="signupBtnText">साइनअप</span></button>
-        </div>
-        <p style="margin-top:15px;">🔑 admin/admin (एडमिन)  |  अंकिता/123 (डेमो)</p>
+    <div class="login-screen" id="loginScreen">
+        <h2 style="color:var(--primary); margin-bottom:20px;">Student Login</h2>
+        <input type="text" id="username" class="login-input" placeholder="User (e.g. Vivek)" value="Vivek">
+        <input type="password" id="password" class="login-input" placeholder="Pass (123)" value="123">
+        <button class="next-btn" style="display:block;" onclick="handleLogin()">Login</button>
     </div>
 
-    <!-- main dashboard -->
-    <div id="dashboardArea" style="display: none;">
-        <!-- नया इंस्टीट्यूट सेलेक्शन सेक्शन (स्केच 1) -->
-        <div class="institution-card" id="institutionSelector">
-            <h3 style="color:var(--primary); margin-bottom: 15px;"><i class="fas fa-university"></i> <span id="instHeading">अपना संस्थान चुनें</span></h3>
-            <div class="institution-grid">
-                <div class="institution-item">
-                    <label id="instTypeLabel">University / School</label>
-                    <select id="instTypeSelect">
-                        <option value="school">School (The Union Academy)</option>
-                        <option value="college">College (Shivaji College)</option>
-                    </select>
-                </div>
-                <div class="institution-item">
-                    <label id="collegeLabel">College (यदि लागू)</label>
-                    <select id="collegeSelect">
-                        <option value="shivaji">शिवाजी कॉलेज (दिल्ली विश्वविद्यालय)</option>
-                        <option value="ramjas">रामजस कॉलेज</option>
-                        <option value="hindu">हिंदू कॉलेज</option>
-                    </select>
-                </div>
-                <div class="institution-item">
-                    <label id="courseLabel">Course / कक्षा</label>
-                    <select id="courseSelect">
-                        <option value="12">कक्षा 12 (विज्ञान)</option>
-                        <option value="11">कक्षा 11</option>
-                        <option value="bsc">B.Sc (भौतिकी)</option>
-                    </select>
-                </div>
-                <div>
-                    <button class="fill-next-btn" id="fillNextBtn"><span id="fillNextText">Fill Next ➤</span></button>
-                </div>
-            </div>
+    <div class="setup-wizard" id="setupWizard" style="display:none;">
+        <h2 style="text-align:center; margin-bottom:20px;">अपनी प्रोफाइल सेट करें</h2>
+
+        <div class="step-box active" id="step1">
+            <div class="step-title">1. आप कहाँ पढ़ते हैं?</div>
+            <select id="selectInst" onchange="showStep2()">
+                <option value="">-- चुनें --</option>
+                <option value="school">School (विद्यालय)</option>
+                <option value="college">College (विश्वविद्यालय)</option>
+            </select>
         </div>
 
-        <!-- AI इंट्रो सेक्शन (पहले जैसा) -->
-        <div class="ai-intro">
-            <div class="intro-card">
-                <h2 id="introHeading">What is Artificial Intelligence?</h2>
-                <p id="introText"><strong>Artificial Intelligence (AI)</strong> simulates human intelligence in machines.</p>
-                <ul class="ai-features">
-                    <li id="feature1"><i class="fas fa-brain"></i> <strong>Narrow AI:</strong> Specific tasks.</li>
-                    <li id="feature2"><i class="fas fa-rocket"></i> <strong>General AI:</strong> Human-level.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="container-main">
-            <!-- कक्षा और विषय चयन (पुराना) अब institution से sync होगा -->
-            <h3 class="section-title" id="classTitle"><i class="fas fa-graduation-cap"></i> कक्षा चुनें</h3>
-            <div class="class-grid" id="classGrid">
-                <button class="class-btn" data-class="9" id="class9">कक्षा 9</button>
-                <button class="class-btn" data-class="10" id="class10">कक्षा 10</button>
-                <button class="class-btn" data-class="11" id="class11">कक्षा 11</button>
-                <button class="class-btn active" data-class="12" id="class12">कक्षा 12</button>
-            </div>
-            <h3 class="section-title" id="subjectTitle"><i class="fas fa-book-open"></i> विषय चुनें</h3>
-            <div class="subject-grid" id="subjectGrid">
-                <button class="sub-btn active" data-subject="physics" id="subPhysics">भौतिकी</button>
-                <button class="sub-btn" data-subject="chemistry" id="subChemistry">रसायन</button>
-                <button class="sub-btn" data-subject="maths" id="subMaths">गणित</button>
-                <button class="sub-btn" data-subject="biology" id="subBiology">जीव विज्ञान</button>
-            </div>
-
-            <!-- नोट्स कार्ड (डायनामिक) -->
-            <div class="notes-card" id="notesCard">
-                <h3><i class="fas fa-sticky-note"></i> <span id="subjectName">भौतिकी</span> - <span id="notesLabel">मूल नोट्स</span></h3>
-                <div id="notesContent" style="white-space: pre-line;"></div>
-                <div id="biologyDiagram" class="heart-diagram" style="display:none;">
-                    <h4 style="color: var(--primary);">❤️ <span id="heartTitle">मानव हृदय संरचना</span></h4>
-                    <div class="heart-chambers">
-                        <div class="chamber" id="chamberRA">दायाँ अलिंद <small>(Right Atrium)</small></div>
-                        <div class="chamber" id="chamberLA">बायाँ अलिंद <small>(Left Atrium)</small></div>
-                        <div class="chamber" id="chamberRV">दायाँ निलय <small>(Right Ventricle)</small></div>
-                        <div class="chamber" id="chamberLV">बायाँ निलय <small>(Left Ventricle)</small></div>
-                    </div>
-                    <p id="saNodeText"><i class="fas fa-arrow-right"></i> SA नोड दाएँ अलिंद में</p>
-                </div>
-                <!-- इंटरएक्टिव डायग्राम प्लेसहोल्डर (फिजिक्स/केम के लिए) -->
-                <div id="physicsDiagram" class="interactive-diagram" style="display:none;">⚛️ प्रकाश वैद्युत प्रभाव का आरेख (इंटरएक्टिव)</div>
-                <div id="chemistryDiagram" class="interactive-diagram" style="display:none;">🧪 रासायनिक अभिक्रिया ऊर्जा आरेख</div>
-            </div>
-
-            <!-- AI टूल्स (उन्नत) -->
-            <div class="ai-card">
-                <h3 style="color:var(--primary);"><i class="fas fa-microchip"></i> <span id="aiHelperTitle">AI सहायक – अपना टॉपिक लिखें</span></h3>
-                <div class="input-row">
-                    <input type="text" id="topicInput" placeholder="जैसे: प्रकाश वैद्युत प्रभाव, हृदय, समीकरण..." value="प्रकाश वैद्युत प्रभाव">
-                    <button class="btn btn-primary" id="generateBtn" style="background:var(--primary);border:none;color:white;padding:12px 25px;border-radius:40px;"><i class="fas fa-magic"></i> <span id="summaryBtn">सारांश</span></button>
-                    <button class="btn btn-icon" id="improveBtn" style="background:var(--dark);color:white;padding:12px;border-radius:40px;" title="आसान मोड"><i class="fas fa-smile"></i></button>
-                    <button class="btn btn-icon" id="voiceSearchBtn" style="background:var(--dark);color:white;padding:12px;border-radius:40px;" title="वॉइस सर्च"><i class="fas fa-microphone-alt"></i></button>
-                </div>
-                <!-- चैप्टर नेविगेशन (नया) -->
-                <div class="chapter-nav" id="chapterNav">
-                    <button class="chapter-btn active" data-chapter="1">अध्याय 1</button>
-                    <button class="chapter-btn" data-chapter="2">अध्याय 2</button>
-                    <button class="chapter-btn" data-chapter="3">अध्याय 3</button>
-                </div>
-                <!-- फाइल अपलोड क्षेत्र -->
-                <div class="file-zone" id="fileDropZone">
-                    <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:var(--primary);"></i>
-                    <div style="flex:1;" id="fileZoneText">फोटो/PDF/वीडियो अपलोड करें या खींचें</div>
-                    <label for="fileUpload" class="btn" style="background:var(--primary); color:white; padding:10px 22px; border-radius:40px;"><i class="fas fa-folder-open"></i> <span id="browseBtn">ब्राउज़ करें</span></label>
-                    <input type="file" id="fileUpload" hidden accept="image/*,application/pdf,video/*,.txt">
-                </div>
-                <div id="fileInfoArea" class="file-info" style="display:none; margin-top:10px;">
-                    <i class="fas fa-file"></i> <span id="fileName"></span> <span id="fileSize"></span>
-                    <button class="clear-file" id="clearFileBtn" style="background:none;border:none;color:red;"><i class="fas fa-times-circle"></i></button>
-                </div>
-                <div class="progress-bar" id="ocrProgress"><div class="progress-fill" id="ocrProgressFill"></div></div>
-                <div class="preview-container" style="display: flex; gap:10px; margin-top:10px;">
-                    <div class="preview-box" id="imgPreviewBox"><img id="previewImg" src="#"></div>
-                    <div class="preview-box" id="videoPreviewBox"><video id="videoPreview" controls></video></div>
-                </div>
-
-                <!-- नया: AI आउटपुट तीन टैब्स में -->
-                <div class="ai-output-tabs">
-                    <div class="ai-output-tab active" data-panel="summary">📄 <span id="tabSummary">सारांश</span></div>
-                    <div class="ai-output-tab" data-panel="notes">📝 <span id="tabNotes">नोट्स</span></div>
-                    <div class="ai-output-tab" data-panel="tricks">✨ <span id="tabTricks">ट्रिक्स</span></div>
-                </div>
-                <div id="outputSummary" class="ai-output-panel active"></div>
-                <div id="outputNotes" class="ai-output-panel"></div>
-                <div id="outputTricks" class="ai-output-panel"></div>
-            </div>
-
-            <!-- वैदिक गणित कार्ड (नया) -->
-            <div class="vedic-card">
-                <h3 style="color:var(--primary); display: flex; align-items: center; gap: 10px;"><i class="fas fa-calculator"></i> <span id="vedicTitle">वैदिक गणित (Vedic Math)</span></h3>
-                <div class="vedic-trick" id="vedicTrickDisplay">
-                    <strong>ट्रिक:</strong> एकाधिकेन पूर्वेण — 9 की श्रृंखला से गुणा करने की सूत्र।
-                </div>
-                <div class="vedic-calculator">
-                    <input type="text" id="vedicInput" placeholder="जैसे 9×9 या 8×7" value="9×9">
-                    <button id="vedicCalcBtn"><i class="fas fa-bolt"></i> <span id="vedicCalcText">गणना करें</span></button>
-                </div>
-                <div id="vedicResult" style="margin-top: 15px; font-size: 1.2rem;">परिणाम: 81</div>
-            </div>
-
-            <!-- वीडियो अनुभाग -->
-            <div class="video-section">
-                <h3 style="color:var(--primary);"><i class="fas fa-video"></i> <span id="videoTitle">वीडियो व्याख्या (अनुरोध पर)</span></h3>
-                <div class="mock-player" id="videoPlaceholder">
-                    <i class="fas fa-play-circle" style="font-size:3rem; color:var(--primary);"></i>
-                    <p id="videoMessage">वीडियो लोड करने के लिए 'AI वीडियो चलाएँ' दबाएँ</p>
-                </div>
-                <div class="flex-row" style="display:flex; gap:10px; justify-content:center;">
-                    <button class="btn" id="playVideoBtn" style="background:var(--primary);color:white;border:none;padding:12px 25px;border-radius:40px;"><i class="fas fa-play"></i> <span id="playBtn">AI वीडियो चलाएँ</span></button>
-                    <button class="btn" id="requestVideoBtn" style="background:var(--dark);color:white;border:none;padding:12px 25px;border-radius:40px;"><i class="fas fa-cloud-upload-alt"></i> <span id="requestBtn">वीडियो अनुरोध करें</span></button>
-                </div>
-            </div>
-
-            <!-- मॉक टेस्ट (RRB NTPC स्टाइल, PYQs के साथ) -->
-            <div class="test-card" id="mockTest">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                    <h3><i class="fas fa-pencil-alt"></i> <span id="testTitle">मॉक टेस्ट (RRB NTPC)</span> <span class="pyq-badge">PYQ</span></h3>
-                    <div class="timer" id="timer" style="background:var(--primary); padding:8px 20px; border-radius:40px;">02:00</div>
-                </div>
-                <div id="testArea">
-                    <div id="questionText" style="margin:15px 0;">लोड हो रहा है...</div>
-                    <div class="options-grid" id="optionsContainer"></div>
-                    <div class="test-footer" style="display:flex; gap:10px; justify-content:center;">
-                        <button class="btn" id="prevBtn" disabled><i class="fas fa-arrow-left"></i> <span id="prevText">पिछला</span></button>
-                        <button class="btn" id="nextBtn"><span id="nextText">अगला</span> <i class="fas fa-arrow-right"></i></button>
-                        <button class="btn btn-primary" id="submitTest"><span id="submitText">जमा करें</span></button>
-                    </div>
-                </div>
-                <div id="testResult" class="result-box" style="background:var(--primary); border-radius:20px; padding:20px; margin-top:20px; display:none;"></div>
-            </div>
-
-            <!-- मेरी नोटबुक (पुराना) -->
-            <h3 class="section-title"><i class="fas fa-notebook"></i> <span id="notebookTitle">मेरी नोटबुक</span></h3>
-            <div class="category-filter">...</div> <!-- संक्षिप्तता के लिए छोड़ा, पूरा कोड पिछले जैसा ही रहेगा -->
-            <!-- बाकी सब पिछले जैसा ही ... -->
-            <div style="margin-bottom: 15px;">
-                <input type="text" id="noteSearchInput" placeholder="🔍 नोट्स में खोजें..." style="width:100%; padding:12px 20px; border-radius:40px; border:2px solid var(--primary);">
-            </div>
-            <div class="notebook-grid" id="notebookList"></div>
-            <div style="display: flex; gap:10px; margin-top:15px;">
-                <input type="text" id="newNoteText" placeholder="नया नोट लिखें..." style="flex:1; padding:12px; border-radius:40px; border:2px solid var(--dark);">
-                <select id="newNoteCategory" style="padding:12px; border-radius:40px; border:2px solid var(--dark);">
-                    <option value="physics">फिजिक्स</option>
-                    <option value="chemistry">केमिस्ट्री</option>
-                    <option value="biology">बायोलॉजी</option>
+        <div class="step-box" id="step2">
+            <div class="step-title">2. संस्थान का नाम?</div>
+            <select id="selectName" onchange="showStep3()">
                 </select>
-                <button class="btn btn-primary" id="addNoteBtn" style="background:var(--primary);border:none;color:white;padding:12px 20px;border-radius:40px;"><i class="fas fa-plus"></i> <span id="addBtn">जोड़ें</span></button>
+        </div>
+
+        <div class="step-box" id="step3">
+            <div class="step-title">3. आपकी कक्षा/कोर्स?</div>
+            <select id="selectCourse" onchange="showFinalButton()">
+                </select>
+        </div>
+
+        <button id="finalSubmitBtn" class="next-btn" onclick="goToDashboard()">
+            Dashboard में जाएँ <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <div class="main-dashboard" id="mainDashboard">
+        <div class="card" style="border-left: 5px solid #28a745;">
+            <h3><i class="fas fa-check-circle"></i> प्रोफाइल सेट!</h3>
+            <p id="profileSummary" style="font-size: 0.9rem; color: #aaa;">...</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-robot"></i> AI से पूछें</h3>
+            <input type="text" placeholder="टॉपिक लिखें (जैसे: Photoelectric effect)..." style="width:100%; padding:10px; border-radius:10px; border:none;">
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button style="padding:8px 15px; background:#333; color:white; border:none; border-radius:20px;">Summary</button>
+                <button style="padding:8px 15px; background:#333; color:white; border:none; border-radius:20px;">Notes</button>
+                <button style="padding:8px 15px; background:#333; color:white; border:none; border-radius:20px;">Tricks</button>
             </div>
-            <button class="btn" id="exportNotesBtn" style="margin:15px 0;background:var(--dark);color:white;border:none;padding:10px 20px;border-radius:40px;"><i class="fas fa-download"></i> <span id="exportBtn">नोटबुक एक्सपोर्ट</span></button>
+        </div>
 
-            <!-- इतिहास -->
-            <h3 class="section-title"><i class="fas fa-history"></i> <span id="historyTitle">मेरा इतिहास</span></h3>
-            <div id="historyList" class="history-list"></div>
-
-            <!-- एडमिन पैनल -->
-            <div id="adminPanel" style="display: none; margin-top: 25px; border-top: 3px dashed var(--primary); padding-top: 20px;">
-                <h3 class="section-title"><i class="fas fa-check-double"></i> <span id="adminTitle">व्यवस्थापक : वीडियो अनुरोध</span></h3>
-                <div id="requestList"></div>
+        <div class="card vedic-box">
+            <h3><i class="fas fa-calculator"></i> वैदिक गणित (Vedic Math)</h3>
+            <p style="font-size:0.8rem; color:#ccc;">ट्रिक: एकाधिकेन पूर्वेण (Squares ending in 5)</p>
+            <div class="calc-row">
+                <input type="number" id="vInput" placeholder="Ex: 25">
+                <button onclick="calcVedic()">Square</button>
             </div>
+            <div id="vResult" style="margin-top:10px; font-weight:bold; color: var(--primary);"></div>
+        </div>
 
-            <!-- टोस्ट -->
-            <div class="toast" id="toast"></div>
-        </div> <!-- container-main end -->
-    </div> <!-- dashboard end -->
-    <div class="footer">लाल & काला थीम · अंकिता के लिए AI स्टडी प्रो</div>
+        <div class="card">
+            <h3><i class="fas fa-train"></i> RRB NTPC मॉक टेस्ट</h3>
+            <div style="background:#333; padding:10px; border-radius:10px; margin-bottom:10px;">
+                <p>Q: मानव शरीर की सबसे बड़ी हड्डी?</p>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                    <span style="background:black; padding:5px 10px; border-radius:5px; font-size:0.8rem;">A. फीमर</span>
+                    <span style="background:black; padding:5px 10px; border-radius:5px; font-size:0.8rem;">B. स्टेप्स</span>
+                </div>
+            </div>
+            <button style="width:100%; padding:10px; background:var(--primary); color:white; border:none; border-radius:20px;">Start Full Test</button>
+        </div>
+    </div>
+
 </div>
 
-<!-- गूगल ट्रांसलेट स्क्रिप्ट -->
-<script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'hi'}, 'google_translate_element');
-}
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<!-- सारा जावास्क्रिप्ट (नए फीचर्स के साथ) -->
 <script>
-(function() {
-    // ==================== डेटा स्टोरेज (पिछले जैसा) ====================
-    const USERS_KEY = 'studyDost_users';
-    const CURRENT_USER_KEY = 'studyDost_currentUser';
-    const HISTORY_KEY = 'studyDost_history';
-    const REQUESTS_KEY = 'studyDost_videoRequests';
-
-    function getNotesKey() { return currentUser ? `notes_${currentUser.username}` : 'notes_default'; }
-
-    if (!localStorage.getItem(USERS_KEY)) {
-        localStorage.setItem(USERS_KEY, JSON.stringify([
-            { username: 'अंकिता', password: '123' },
-            { username: 'राहुल', password: '123' },
-            { username: 'admin', password: 'admin' }
-        ]));
-    }
-    if (!localStorage.getItem(REQUESTS_KEY)) localStorage.setItem(REQUESTS_KEY, JSON.stringify([]));
-    if (!localStorage.getItem(HISTORY_KEY)) localStorage.setItem(HISTORY_KEY, JSON.stringify([]));
-
-    // ==================== ग्लोबल वैरिएबल ====================
-    let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
-    let selectedClass = '12';
-    let selectedSubject = 'physics';
-    let currentLang = 'hi';
-
-    // मॉक टेस्ट (अब RRB NTPC के प्रश्न)
-    const mockQuestions = [
-        { question: 'प्रकाश वैद्युत प्रभाव में धातु से इलेक्ट्रॉन उत्सर्जन के लिए आवश्यक है?', options: ['प्रकाश की तीव्रता', 'प्रकाश की आवृत्ति', 'प्रकाश का रंग', 'प्रकाश का ध्रुवण'], answer: 1, pyq: 'RRB NTPC 2021' },
-        { question: 'मानव हृदय का प्राकृतिक पेसमेकर कौन सा है?', options: ['AV नोड', 'SA नोड', 'बंडल ऑफ हिज', 'पर्किंजी तंतु'], answer: 1, pyq: 'RRB Group D 2019' },
-        { question: 'द्विघात समीकरण ax²+bx+c=0 के मूलों का योग होता है?', options: ['-b/a', 'b/a', 'c/a', '-c/a'], answer: 0, pyq: 'RRB NTPC 2020' },
-        { question: 'निम्न में से कौन सा ग्रीनहाउस गैस नहीं है?', options: ['CO₂', 'CH₄', 'N₂O', 'O₂'], answer: 3, pyq: 'RRB JE 2019' }
-    ];
-    let currentQuestionIndex = 0, userAnswers = new Array(mockQuestions.length).fill(-1);
-    let timerInterval, timeLeft = 120, testActive = false;
-
-    // DOM एलिमेंट्स
-    const loginArea = document.getElementById('loginArea');
-    const dashboardArea = document.getElementById('dashboardArea');
-    const userInfoDiv = document.getElementById('userInfo');
-    const usernameSpan = document.getElementById('usernameDisplay');
-    const toast = document.getElementById('toast');
-    const notesContent = document.getElementById('notesContent');
-    const subjectNameSpan = document.getElementById('subjectName');
-    const biologyDiagram = document.getElementById('biologyDiagram');
-    const physicsDiagram = document.getElementById('physicsDiagram');
-    const chemistryDiagram = document.getElementById('chemistryDiagram');
-    const videoMessage = document.getElementById('videoMessage');
-    const adminPanel = document.getElementById('adminPanel');
-    const requestListDiv = document.getElementById('requestList');
-    const historyListDiv = document.getElementById('historyList');
-    const notebookListDiv = document.getElementById('notebookList');
-    const noteSearchInput = document.getElementById('noteSearchInput');
-    const topicInput = document.getElementById('topicInput');
-    const generateBtn = document.getElementById('generateBtn');
-    const improveBtn = document.getElementById('improveBtn');
-    const voiceSearchBtn = document.getElementById('voiceSearchBtn');
-    const outputSummary = document.getElementById('outputSummary');
-    const outputNotes = document.getElementById('outputNotes');
-    const outputTricks = document.getElementById('outputTricks');
-    const vedicInput = document.getElementById('vedicInput');
-    const vedicCalcBtn = document.getElementById('vedicCalcBtn');
-    const vedicResult = document.getElementById('vedicResult');
-    const fillNextBtn = document.getElementById('fillNextBtn');
-
-    // उपयोगिता
-    function showToast(msg, type = 'success') {
-        toast.style.display = 'block';
-        toast.innerHTML = msg;
-        toast.style.background = type === 'error' ? '#b71c1c' : (type === 'warning' ? '#b85e00' : '#1e1e1e');
-        setTimeout(() => toast.style.display = 'none', 3000);
-    }
-    function saveCurrentUser(user) { currentUser = user; localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user)); }
-
-    // नोट्स डेटा
-    const notesDatabase = {
-        physics: '⚛️ **प्रकाश वैद्युत प्रभाव**: K_max = hf - φ₀\n• निरोधी विभव V₀ = (h/e)f - φ₀/e\n• देहली आवृत्ति: f₀ = φ₀/h',
-        chemistry: '🧪 **रासायनिक बलगतिकी**: अभिक्रिया की दर, कोटि, आणविकता।\n• प्रथम कोटि: k = (2.303/t) log([R]₀/[R])',
-        maths: '📐 **अवकलन**: d/dx(sin x) = cos x, d/dx(cos x) = -sin x\n• श्रृंखला नियम',
-        biology: '🧬 **मानव हृदय**: चार कक्ष – दायां अलिंद, दायां निलय, बायां अलिंद, बायां निलय। SA नोड पेसमेकर।'
-    };
-
-    function updateNotesAndUI() {
-        subjectNameSpan.innerText = (selectedSubject === 'physics' ? 'भौतिकी' : selectedSubject === 'chemistry' ? 'रसायन' : selectedSubject === 'maths' ? 'गणित' : 'जीव विज्ञान');
-        notesContent.innerText = notesDatabase[selectedSubject] || 'नोट्स उपलब्ध नहीं';
-        biologyDiagram.style.display = selectedSubject === 'biology' ? 'flex' : 'none';
-        physicsDiagram.style.display = selectedSubject === 'physics' ? 'block' : 'none';
-        chemistryDiagram.style.display = selectedSubject === 'chemistry' ? 'block' : 'none';
-        addToHistory(selectedSubject);
-        checkApprovedVideo(selectedSubject);
-        renderNotebookFromStorage();
-    }
-
-    function addToHistory(subject) { /* पिछले जैसा */ if (!currentUser) return; let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; history.push({ username: currentUser.username, subject, className: selectedClass, timestamp: new Date().toLocaleString('hi-IN') }); localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderHistory(); }
-    function renderHistory() { /* पिछले जैसा */ if (!currentUser) return; const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; const userHistory = history.filter(h => h.username === currentUser.username).reverse().slice(0, 10); historyListDiv.innerHTML = userHistory.length ? userHistory.map(h => `<div class="history-item"><span><i class="fas fa-book"></i> ${h.subject} (कक्षा ${h.className})</span><span class="badge">${h.timestamp}</span></div>`).join('') : '<div class="history-item">कोई इतिहास नहीं</div>'; }
-    function requestVideo() { if (!currentUser) return; const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; requests.push({ username: currentUser.username, subject: selectedSubject, className: selectedClass, approved: false, timestamp: new Date().toLocaleString() }); localStorage.setItem(REQUESTS_KEY, JSON.stringify(requests)); showToast('✅ वीडियो अनुरोध भेजा गया'); if (currentUser.username === 'admin') renderRequests(); }
-    function renderRequests() { const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; const pending = requests.filter(r => !r.approved); requestListDiv.innerHTML = pending.length ? pending.map((r, idx) => `<div class="request-item"><span>${r.username} - ${r.subject} (कक्षा ${r.className})</span><button class="btn" onclick="window.approveRequest(${idx})" style="padding:4px 16px; background:var(--primary); color:white; border:none; border-radius:40px;">मंजूर करें</button></div>`).join('') : '<div class="history-item">कोई लंबित अनुरोध नहीं</div>'; }
-    window.approveRequest = function(pendingIdx) { const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; let count = -1; for (let i=0; i<requests.length; i++) { if (!requests[i].approved) count++; if (count === pendingIdx) { requests[i].approved = true; break; } } localStorage.setItem(REQUESTS_KEY, JSON.stringify(requests)); showToast('✅ अनुमोदित'); renderRequests(); checkApprovedVideo(selectedSubject); };
-    function checkApprovedVideo(subject) { if (!currentUser) return; const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; const approved = requests.find(r => r.subject === subject && r.className === selectedClass && r.approved); videoMessage.innerHTML = approved ? '<span style="color:lightgreen;">✅ स्वीकृत वीडियो उपलब्ध! चलाएँ.</span>' : 'कोई स्वीकृत वीडियो नहीं।'; }
-    function playVideo() { const requests = JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; const approved = requests.find(r => r.subject === selectedSubject && r.className === selectedClass && r.approved); if (approved || (currentUser && currentUser.username === 'admin')) { videoMessage.innerHTML = '🎬 [AI वीडियो] चल रहा है...'; showToast('🔊 वीडियो शुरू'); } else showToast('❌ वीडियो स्वीकृत नहीं।', 'error'); }
-
-    // नए AI आउटपुट टैब्स
-    document.querySelectorAll('.ai-output-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.ai-output-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.ai-output-panel').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            const panelId = this.dataset.panel;
-            document.getElementById('output' + panelId.charAt(0).toUpperCase() + panelId.slice(1)).classList.add('active');
-        });
-    });
-
-    function generateAISummary(topic) {
-        let t = topic.toLowerCase();
-        if (t.includes('प्रकाश')) return "प्रकाश वैद्युत प्रभाव: $$K_{\\text{max}} = hf - \\phi_0$$। आवृत्ति देहली आवृत्ति से अधिक होनी चाहिए।";
-        if (t.includes('हृदय')) return "मानव हृदय: चार कक्ष, SA नोड पेसमेकर, रक्त पंप करता है।";
-        if (t.includes('गणित')||t.includes('समीकरण')) return "द्विघात समीकरण: $$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$";
-        return `${topic} का संक्षिप्त सारांश: यह टॉपिक परीक्षा के लिए महत्वपूर्ण है।`;
-    }
-    function generateNotes(topic) { return "विस्तृत नोट्स: " + topic + " के बारे में महत्वपूर्ण बिंदु..."; }
-    function generateTricks(topic) { return "ट्रिक: " + topic + " को याद रखने का आसान तरीका — उदाहरण सहित।"; }
-
-    function processAI() {
-        const topic = topicInput.value.trim(); if (!topic) return;
-        outputSummary.innerHTML = `<h3 style="color:var(--primary);">🤖 सारांश</h3><p>${generateAISummary(topic)}</p>`;
-        outputNotes.innerHTML = `<h3 style="color:var(--primary);">📝 नोट्स</h3><p>${generateNotes(topic)}</p>`;
-        outputTricks.innerHTML = `<h3 style="color:var(--primary);">✨ ट्रिक्स</h3><p>${generateTricks(topic)}</p>`;
-        if (window.renderMathInElement) renderMathInElement(outputSummary);
-    }
-
-    generateBtn.addEventListener('click', processAI);
-
-    // वैदिक कैलकुलेटर (सरल उदाहरण)
-    vedicCalcBtn.addEventListener('click', function() {
-        let expr = vedicInput.value.trim();
-        try {
-            if (expr.includes('×')) expr = expr.replace('×', '*');
-            let result = eval(expr);
-            vedicResult.innerText = `परिणाम: ${result} (वैदिक ट्रिक: एकाधिकेन पूर्वेण)`;
-        } catch {
-            vedicResult.innerText = 'गलत इनपुट';
+    // --- 1. लॉगिन लॉजिक ---
+    function handleLogin() {
+        const user = document.getElementById('username').value;
+        if(user) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('setupWizard').style.display = 'flex'; // फॉर्म दिखाओ
+            document.getElementById('userBadge').style.display = 'block';
+            document.getElementById('userBadge').innerText = 'Hi, ' + user;
         }
-    });
+    }
 
-    // फिल नेक्स्ट बटन (स्केच 1)
-    fillNextBtn.addEventListener('click', function() {
-        let instType = document.getElementById('instTypeSelect').value;
-        let college = document.getElementById('collegeSelect').value;
-        let course = document.getElementById('courseSelect').value;
-        showToast(`चयन: ${instType}, ${college}, ${course} → आगे बढ़ें`);
-        // यहाँ आप डैशबोर्ड को आगे बढ़ा सकते हैं, जैसे स्क्रॉल करना
-        document.querySelector('.ai-intro').scrollIntoView({ behavior: 'smooth' });
-    });
+    // --- 2. स्टेप-बाय-स्टेप लॉजिक (जादुई गायब होने वाला) ---
+    
+    // स्टेप 1 बदला -> स्टेप 2 दिखाओ
+    function showStep2() {
+        const instType = document.getElementById('selectInst').value;
+        const nameSelect = document.getElementById('selectName');
+        const step2 = document.getElementById('step2');
+        
+        // डेटा भरना
+        nameSelect.innerHTML = '<option value="">-- चुनें --</option>';
+        if(instType === 'college') {
+            nameSelect.innerHTML += '<option value="Shivaji College">Shivaji College (DU)</option>';
+            nameSelect.innerHTML += '<option value="Hansraj">Hansraj College</option>';
+        } else if (instType === 'school') {
+            nameSelect.innerHTML += '<option value="The Union Academy">The Union Academy</option>';
+            nameSelect.innerHTML += '<option value="Govt School">Govt. Boys Sr. Sec.</option>';
+        }
 
-    // भाषा टॉगल (अपडेट नए एलिमेंट्स के लिए)
-    window.toggleLanguage = function() {
-        const toggle = document.getElementById('langToggle');
-        const searchInput = document.getElementById('globalSearchInput');
-        if (currentLang === 'hi') {
-            currentLang = 'en';
-            toggle.classList.add('eng');
-            // English translations (नए एलिमेंट्स)
-            document.getElementById('instHeading').innerText = 'Choose your Institute';
-            document.getElementById('instTypeLabel').innerText = 'University / School';
-            document.getElementById('collegeLabel').innerText = 'College (if applicable)';
-            document.getElementById('courseLabel').innerText = 'Course / Class';
-            document.getElementById('fillNextText').innerText = 'Fill Next ➤';
-            document.getElementById('tabSummary').innerText = 'Summary';
-            document.getElementById('tabNotes').innerText = 'Notes';
-            document.getElementById('tabTricks').innerText = 'Tricks';
-            document.getElementById('vedicTitle').innerText = 'Vedic Math';
-            document.getElementById('vedicCalcText').innerText = 'Calculate';
-            // बाकी पिछले वाले...
+        if(instType) {
+            step2.classList.add('active'); // स्टेप 2 दिखाओ
+            // पुराने स्टेप्स छिपाओ मत, ताकि वो बदल सके, बस अगला दिखाओ
+        }
+    }
+
+    // स्टेप 2 बदला -> स्टेप 3 दिखाओ
+    function showStep3() {
+        const instName = document.getElementById('selectName').value;
+        const courseSelect = document.getElementById('selectCourse');
+        const step3 = document.getElementById('step3');
+
+        // डेटा भरना
+        courseSelect.innerHTML = '<option value="">-- चुनें --</option>';
+        if(instName.includes('College')) {
+            courseSelect.innerHTML += '<option value="B.Sc (Hons) Math">B.Sc (Hons) Mathematics</option>';
+            courseSelect.innerHTML += '<option value="B.A Prog">B.A. Programme</option>';
         } else {
-            currentLang = 'hi';
-            toggle.classList.remove('eng');
-            document.getElementById('instHeading').innerText = 'अपना संस्थान चुनें';
-            document.getElementById('instTypeLabel').innerText = 'University / School';
-            document.getElementById('collegeLabel').innerText = 'College (यदि लागू)';
-            document.getElementById('courseLabel').innerText = 'Course / कक्षा';
-            document.getElementById('fillNextText').innerText = 'Fill Next ➤';
-            document.getElementById('tabSummary').innerText = 'सारांश';
-            document.getElementById('tabNotes').innerText = 'नोट्स';
-            document.getElementById('tabTricks').innerText = 'ट्रिक्स';
-            document.getElementById('vedicTitle').innerText = 'वैदिक गणित';
-            document.getElementById('vedicCalcText').innerText = 'गणना करें';
+            courseSelect.innerHTML += '<option value="Class 12">Class 12 (Science)</option>';
+            courseSelect.innerHTML += '<option value="Class 11">Class 11</option>';
         }
-        showToast(`Language: ${currentLang === 'hi' ? 'Hindi' : 'English'}`);
-    };
 
-    // लॉगिन / लॉगआउट (पिछले जैसा)
-    document.getElementById('loginBtn').addEventListener('click', () => {
-        const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-        const user = users.find(u => u.username === document.getElementById('loginUsername').value.trim() && u.password === document.getElementById('loginPassword').value.trim());
-        if (user) { onLogin(user); } else showToast('गलत यूजरनेम/पासवर्ड', 'error');
-    });
-    document.getElementById('signupBtn').addEventListener('click', () => {
-        const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-        const newU = document.getElementById('loginUsername').value.trim(); const newP = document.getElementById('loginPassword').value.trim();
-        if (!newU || !newP) return showToast('यूजरनेम/पासवर्ड दें','error');
-        if (users.find(u => u.username === newU)) return showToast('यूजरनेम मौजूद','error');
-        users.push({ username: newU, password: newP }); localStorage.setItem(USERS_KEY, JSON.stringify(users)); showToast('अकाउंट बना, अब लॉगिन करें');
-    });
-    function onLogin(user) {
-        saveCurrentUser(user); usernameSpan.innerText = user.username; userInfoDiv.style.display = 'flex'; loginArea.style.display = 'none'; dashboardArea.style.display = 'block';
-        if (user.username === 'admin') { adminPanel.style.display = 'block'; renderRequests(); } else adminPanel.style.display = 'none';
-        updateNotesAndUI(); renderHistory(); renderNotebookFromStorage(); initMockTest();
-    }
-    document.getElementById('logoutBtn').addEventListener('click', () => { currentUser = null; localStorage.removeItem(CURRENT_USER_KEY); userInfoDiv.style.display = 'none'; loginArea.style.display = 'block'; dashboardArea.style.display = 'none'; });
-    document.querySelectorAll('.class-btn').forEach(b => b.addEventListener('click', function() {
-        document.querySelectorAll('.class-btn').forEach(bb => bb.classList.remove('active')); this.classList.add('active'); selectedClass = this.dataset.class; updateNotesAndUI();
-    }));
-    document.querySelectorAll('.sub-btn').forEach(b => b.addEventListener('click', function() {
-        document.querySelectorAll('.sub-btn').forEach(bb => bb.classList.remove('active')); this.classList.add('active'); selectedSubject = this.dataset.subject; updateNotesAndUI();
-    }));
-    document.getElementById('playVideoBtn').addEventListener('click', playVideo);
-    document.getElementById('requestVideoBtn').addEventListener('click', requestVideo);
-
-    // मॉक टेस्ट फंक्शन
-    function initMockTest() {
-        currentQuestionIndex = 0; userAnswers.fill(-1); timeLeft = 120; testActive = true;
-        document.getElementById('submitTest').style.display = 'inline-flex';
-        document.getElementById('testResult').style.display = 'none';
-        startTimer(); showQuestion();
-    }
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--; let mins = Math.floor(timeLeft/60), secs = timeLeft%60;
-            document.getElementById('timer').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-            if (timeLeft <= 0) { clearInterval(timerInterval); submitMockTest(); }
-        },1000);
-    }
-    function showQuestion() {
-        if (!testActive) return;
-        let q = mockQuestions[currentQuestionIndex];
-        document.getElementById('questionText').innerHTML = `<strong>प्रश्न ${currentQuestionIndex+1}/${mockQuestions.length}:</strong> ${q.question} <span class="pyq-badge">${q.pyq || ''}</span>`;
-        let opts = '';
-        q.options.forEach((opt, idx) => {
-            opts += `<div class="opt-btn ${userAnswers[currentQuestionIndex] === idx ? 'selected' : ''}" onclick="selectOption(${idx})">${String.fromCharCode(65+idx)}. ${opt}</div>`;
-        });
-        document.getElementById('optionsContainer').innerHTML = opts;
-        document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-        document.getElementById('nextBtn').disabled = currentQuestionIndex === mockQuestions.length-1;
-    }
-    window.selectOption = function(idx) { if (!testActive) return; userAnswers[currentQuestionIndex] = idx; showQuestion(); };
-    document.getElementById('prevBtn')?.addEventListener('click', ()=>{ if(currentQuestionIndex>0) { currentQuestionIndex--; showQuestion(); } });
-    document.getElementById('nextBtn')?.addEventListener('click', ()=>{ if(currentQuestionIndex < mockQuestions.length-1) { currentQuestionIndex++; showQuestion(); } });
-    document.getElementById('submitTest')?.addEventListener('click', submitMockTest);
-    function submitMockTest() {
-        clearInterval(timerInterval); testActive = false;
-        let correct = userAnswers.reduce((acc, ans, i) => acc + (ans === mockQuestions[i].answer ? 1 : 0), 0);
-        let percent = (correct / mockQuestions.length) * 100;
-        document.getElementById('testResult').innerHTML = `<h3>परिणाम</h3><p>सही: ${correct}/${mockQuestions.length} (${percent.toFixed(1)}%)</p><button class="btn" onclick="initMockTest()">पुनः प्रयास</button>`;
-        document.getElementById('testResult').style.display = 'block';
-        document.getElementById('submitTest').style.display = 'none';
+        if(instName) {
+            step3.classList.add('active'); // स्टेप 3 दिखाओ
+        }
     }
 
-    // नोटबुक फंक्शन (संक्षिप्त)
-    function getNotes() { return JSON.parse(localStorage.getItem(getNotesKey()) || '[]'); }
-    function saveNotes(notes) { localStorage.setItem(getNotesKey(), JSON.stringify(notes)); }
-    function renderNotebookFromStorage(cat = 'all') {
-        let notes = getNotes();
-        const searchTerm = noteSearchInput ? noteSearchInput.value.toLowerCase() : '';
-        let filtered = cat === 'all' ? notes : notes.filter(n => n.category === cat);
-        if (searchTerm) filtered = filtered.filter(n => n.text.toLowerCase().includes(searchTerm));
-        filtered.sort((a,b) => b.timestamp - a.timestamp);
-        notebookListDiv.innerHTML = filtered.length ? filtered.map(n => `<div class="note-item"><span><i class="fas fa-${n.category==='physics'?'atom':(n.category==='chemistry'?'flask':'dna')}"></i> ${n.text}</span><button class="delete-note" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button></div>`).join('') : '<div class="note-item">कोई नोट नहीं</div>';
+    // स्टेप 3 बदला -> बटन दिखाओ
+    function showFinalButton() {
+        const course = document.getElementById('selectCourse').value;
+        if(course) {
+            document.getElementById('finalSubmitBtn').style.display = 'block';
+        }
     }
-    window.deleteNote = (id) => { let notes = getNotes(); notes = notes.filter(n => n.id !== id); saveNotes(notes); const activeCat = document.querySelector('.cat-btn.active')?.dataset.cat || 'all'; renderNotebookFromStorage(activeCat); };
-    document.getElementById('addNoteBtn')?.addEventListener('click', () => {
-        const text = document.getElementById('newNoteText').value.trim();
-        const category = document.getElementById('newNoteCategory').value;
-        if (!text) { showToast('नोट लिखें', 'error'); return; }
-        let notes = getNotes();
-        notes.push({ id: 'note_' + Date.now() + Math.random(), text: text, category: category, timestamp: Date.now() });
-        saveNotes(notes);
-        document.getElementById('newNoteText').value = '';
-        renderNotebookFromStorage(document.querySelector('.cat-btn.active')?.dataset.cat || 'all');
-        showToast('✅ नोट जुड़ गया');
-    });
-    document.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', function() {
-        document.querySelectorAll('.cat-btn').forEach(bb => bb.classList.remove('active')); this.classList.add('active');
-        renderNotebookFromStorage(this.dataset.cat);
-    }));
 
-    // ऑटो-स्टार्ट अगर यूजर लॉगिन है
-    if (currentUser) onLogin(currentUser);
-})();
+    // --- 3. फाइनल "गायब" लॉजिक ---
+    function goToDashboard() {
+        // डेटा सेव करो
+        const inst = document.getElementById('selectName').value;
+        const course = document.getElementById('selectCourse').value;
+        
+        // प्रोफाइल अपडेट
+        document.getElementById('profileSummary').innerText = `${inst} | ${course}`;
+
+        // जादू: फॉर्म गायब, डैशबोर्ड प्रकट
+        document.getElementById('setupWizard').style.display = 'none'; // GAYAB!
+        document.getElementById('mainDashboard').style.display = 'block'; // SHOW!
+    }
+
+    // --- 4. वैदिक मैथ ---
+    function calcVedic() {
+        let val = document.getElementById('vInput').value;
+        if(val) {
+            let ans = val * val;
+            document.getElementById('vResult').innerText = `${val}² = ${ans} (Calculated via Vedic Trick)`;
+        }
+    }
 </script>
-<!-- मीडिया क्रिएटर के छूटे हुए टैब्स के लिए डमी (पूरा कोड पिछले जैसा रहेगा) -->
-<div style="display:none;">All tabs integrated</div>
+
 </body>
 </html>
