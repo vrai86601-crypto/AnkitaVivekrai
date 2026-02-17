@@ -15,98 +15,105 @@
     <style>
         :root { --primary: #e31e24; --dark: #0f0f0f; --card: #1a1a1a; --text: #ffffff; }
         body { font-family: 'Poppins', 'IBM Plex Sans Devanagari', sans-serif; background: var(--dark); color: var(--text); margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        
         .auth-box { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #333; text-align: center; }
         h2 { color: var(--primary); margin-bottom: 5px; font-size: 28px; }
-        p.subtitle { color: #aaa; font-size: 14px; margin-bottom: 25px; }
-        
-        .form-group { position: relative; margin-bottom: 15px; }
-        .form-input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 10px; color: white; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.3s; }
-        .form-input:focus { border-color: var(--primary); background: #333; }
-        
-        .btn-main { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-google { width: 100%; padding: 12px; background: transparent; border: 1px solid #444; border-radius: 10px; color: white; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        .divider { margin: 20px 0; display: flex; align-items: center; color: #666; font-size: 12px; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #333; margin: 0 10px; }
-        
-        .footer-link { font-size: 13px; color: #aaa; margin-top: 20px; }
-        .footer-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .form-input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 10px; color: white; box-sizing: border-box; margin-bottom: 15px; outline: none; }
+        .btn-main { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-main:hover { transform: scale(1.02); background: #c01a1f; }
         .hidden { display: none; }
+        #welcomeScreen { padding: 40px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="auth-box" id="authBox">
+    <div class="auth-box" id="authScreen">
         <h2 id="title">लॉगिन करें</h2>
-        <p class="subtitle">AI Study Portal में आपका स्वागत है</p>
+        <p style="color:#aaa; font-size:14px; margin-bottom:20px;">AI Study Portal में आपका स्वागत है</p>
 
         <div id="loginSection">
-            <div class="form-group">
-                <input type="email" id="email" class="form-input" placeholder="ईमेल (example@gmail.com)">
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" class="form-input" placeholder="पासवर्ड">
-            </div>
-            <button class="btn-main" onclick="handleLogin()"><i class="fas fa-sign-in-alt"></i> लॉगिन करें</button>
+            <input type="text" id="email" class="form-input" placeholder="नाम या ईमेल">
+            <input type="password" id="password" class="form-input" placeholder="पासवर्ड">
+            <button class="btn-main" onclick="handleLogin()">लॉगिन करें</button>
         </div>
 
         <div id="signupSection" class="hidden">
-            <input type="text" id="name" class="form-input" placeholder="पूरा नाम" style="margin-bottom:15px;">
-            <input type="email" id="s-email" class="form-input" placeholder="ईमेल" style="margin-bottom:15px;">
-            <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड" style="margin-bottom:15px;">
+            <input type="text" id="s-name" class="form-input" placeholder="पूरा नाम">
+            <input type="email" id="s-email" class="form-input" placeholder="ईमेल">
+            <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड">
             <button class="btn-main" onclick="handleSignup()">खाता बनाएँ</button>
         </div>
 
-        <div class="divider">या</div>
+        <p style="margin-top:20px; font-size:14px; color:#aaa;" id="toggleText">
+            खाता नहीं है? <a href="javascript:void(0)" onclick="toggleUI(true)" style="color:var(--primary); text-decoration:none;">रजिस्टर करें</a>
+        </p>
+    </div>
 
-        <button class="btn-google" onclick="googleLogin()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18"> Google से जारी रखें
-        </button>
-
-        <div class="footer-link" id="toggleText">
-            खाता नहीं है? <a href="javascript:void(0)" onclick="toggleUI(true)">रजिस्टर करें</a>
-        </div>
+    <div id="welcomeScreen" class="hidden">
+        <h1 style="color:var(--primary);">नमस्ते, <span id="userNameDisplay">छात्र</span>! 👋</h1>
+        <p>आपकी पढ़ाई के लिए AI तैयार है।</p>
+        <button class="btn-main" onclick="logout()" style="width:auto; padding:10px 20px;">Logout</button>
     </div>
 
     <script>
-        // आपके प्रोजेक्ट (Ankita-3118d) की सेटिंग्स
+        // 1. सही Firebase Config (Ankita-3118d)
         const firebaseConfig = {
-            apiKey: "AIzaSyCVaemlk94fylsQDDBy7XaR2J8sR7vrosw",
-            authDomain: "ankita-3118d.firebaseapp.com",
-            projectId: "ankita-3118d",
-            storageBucket: "ankita-3118d.firebasestorage.app",
-            messagingSenderId: "20444353775",
-            appId: "1:20444353775:web:e76d8677769a3cb64d771a"
+            apiKey: "AIzaSyCVaemlk94fylsQDDBy7XaR2J8sR7vrosw", //
+            authDomain: "ankita-3118d.firebaseapp.com", //
+            projectId: "ankita-3118d", //
+            storageBucket: "ankita-3118d.firebasestorage.app", //
+            messagingSenderId: "20444353775", //
+            appId: "1:20444353775:web:e76d8677769a3cb64d771a" //
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // 1. ईमेल लॉगिन (Email must be valid format)
+        // 2. लॉगिन फंक्शन (Auto-Email Feature)
         async function handleLogin() {
-            const email = document.getElementById('email').value;
+            let emailInput = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            if(!email.includes("@")) return alert("कृपया सही ईमेल लिखें (जैसे: ankita@gmail.com)");
-            try { await auth.signInWithEmailAndPassword(email, password); alert("Welcome!"); } 
-            catch (e) { alert("गलती: " + e.message); }
+
+            // अगर यूजर सिर्फ नाम लिखे, तो अपने आप ईमेल बना दें
+            if (!emailInput.includes("@")) {
+                emailInput = emailInput + "@gmail.com";
+            }
+
+            try {
+                const userCred = await auth.signInWithEmailAndPassword(emailInput, password);
+                showDashboard(userCred.user);
+            } catch (e) {
+                alert("Login Error: " + e.message);
+            }
         }
 
-        // 2. Google लॉगिन
-        async function googleLogin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithPopup(provider); alert("Google Login Successful!"); } 
-            catch (e) { alert(e.message); }
+        // 3. रजिस्टर फंक्शन
+        async function handleSignup() {
+            const name = document.getElementById('s-name').value;
+            const email = document.getElementById('s-email').value;
+            const password = document.getElementById('s-password').value;
+
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection('students').doc(cred.user.uid).set({ Name: name, Email: email });
+                alert("खाता बन गया!");
+                location.reload();
+            } catch (e) { alert(e.message); }
+        }
+
+        function showDashboard(user) {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = user.email.split('@')[0];
         }
 
         function toggleUI(isSignup) {
             document.getElementById('loginSection').classList.toggle('hidden', isSignup);
             document.getElementById('signupSection').classList.toggle('hidden', !isSignup);
             document.getElementById('title').innerText = isSignup ? "रजिस्टर करें" : "लॉगिन करें";
-            document.getElementById('toggleText').innerHTML = isSignup ? 
-                'पहले से खाता है? <a href="javascript:void(0)" onclick="toggleUI(false)">लॉगिन करें</a>' : 
-                'खाता नहीं है? <a href="javascript:void(0)" onclick="toggleUI(true)">रजिस्टर करें</a>';
         }
+
+        function logout() { auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
