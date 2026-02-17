@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Portal - Universal</title>
+    <title>AI Study Portal</title>
     
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Devanagari:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,10 +18,9 @@
         .auth-box { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #333; text-align: center; }
         h2 { color: var(--primary); margin-bottom: 5px; font-size: 28px; }
         .form-input { width: 100%; padding: 14px; background: #2a2a2a; border: 1px solid #444; border-radius: 10px; color: white; box-sizing: border-box; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-main:hover { transform: scale(1.02); background: #c01a1f; }
+        .btn-main { width: 100%; padding: 14px; background: var(--primary); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-size: 16px; transition: 0.3s; margin-bottom: 10px; }
+        .btn-google { width: 100%; padding: 12px; background: #fff; border: none; border-radius: 10px; color: #000; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
         .hidden { display: none; }
-        #welcomeScreen { padding: 40px; text-align: center; }
     </style>
 </head>
 <body>
@@ -31,33 +30,37 @@
         <p style="color:#aaa; font-size:14px; margin-bottom:20px;">AI Study Portal में आपका स्वागत है</p>
 
         <div id="loginSection">
-            <input type="text" id="email" class="form-input" placeholder="नाम या ईमेल">
+            <input type="text" id="email" class="form-input" placeholder="ईमेल">
             <input type="password" id="password" class="form-input" placeholder="पासवर्ड">
-            <button class="btn-main" id="loginBtn" type="button">लॉगिन करें</button>
+            <button class="btn-main" id="loginBtn">लॉगिन करें</button>
         </div>
 
         <div id="signupSection" class="hidden">
             <input type="text" id="s-name" class="form-input" placeholder="पूरा नाम">
             <input type="email" id="s-email" class="form-input" placeholder="ईमेल">
-            <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड">
-            <button class="btn-main" id="signupBtn" type="button">खाता बनाएँ</button>
+            <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड (कम से कम 6 अक्षर)">
+            <button class="btn-main" id="signupBtn">खाता बनाएँ</button>
         </div>
+
+        <button class="btn-google" id="googleBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20"> Google से जुड़ें
+        </button>
 
         <p style="margin-top:20px; font-size:14px; color:#aaa;" id="toggleText">
             खाता नहीं है? <a href="javascript:void(0)" id="toggleLink" style="color:var(--primary); text-decoration:none;">रजिस्टर करें</a>
         </p>
     </div>
 
-    <div id="welcomeScreen" class="hidden">
+    <div id="welcomeScreen" class="hidden" style="text-align:center;">
         <h1 style="color:var(--primary);">नमस्ते, <span id="userNameDisplay">छात्र</span>! 👋</h1>
         <p>आपकी पढ़ाई के लिए AI तैयार है।</p>
-        <button class="btn-main" id="logoutBtn" style="width:auto; padding:10px 20px;">Logout</button>
+        <button class="btn-main" id="logoutBtn" style="width:auto; padding:10px 20px;">लॉगआउट</button>
     </div>
 
     <script>
-        // Firebase Config (आपकी दी हुई)
+        // --- 1. आपकी नई API Key के साथ Config ---
         const firebaseConfig = {
-            apiKey: "AIzaSyCVaemlk94fylsQDDBy7XaR2J8sR7vrosw",
+            apiKey: "AIzaSyCVaemlk94fyisQOD0y7XaR2J8sR7vrosw", // नई चाबी
             authDomain: "ankita-3118d.firebaseapp.com",
             projectId: "ankita-3118d",
             storageBucket: "ankita-3118d.firebasestorage.app",
@@ -69,169 +72,58 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // DOM Elements
-        const authScreen = document.getElementById('authScreen');
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        const loginSection = document.getElementById('loginSection');
-        const signupSection = document.getElementById('signupSection');
-        const titleEl = document.getElementById('title');
-        const toggleText = document.getElementById('toggleText');
-        const toggleLink = document.getElementById('toggleLink');
-        const userNameDisplay = document.getElementById('userNameDisplay');
-
-        // Buttons
-        const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        // --------------------------------------------------------------
-        // Auth State Observer – यह देखता है कि यूजर लॉगिन है या नहीं
-        // --------------------------------------------------------------
-        auth.onAuthStateChanged(async (user) => {
+        // --- 2. Auth State Observer ---
+        auth.onAuthStateChanged((user) => {
             if (user) {
-                // यूजर लॉगिन है – डैशबोर्ड दिखाओ
-                showDashboard(user);
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('welcomeScreen').classList.remove('hidden');
+                document.getElementById('userNameDisplay').innerText = user.displayName || user.email.split('@')[0];
             } else {
-                // यूजर लॉगिन नहीं है – Auth स्क्रीन दिखाओ
-                authScreen.classList.remove('hidden');
-                welcomeScreen.classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('welcomeScreen').classList.add('hidden');
             }
         });
 
-        // --------------------------------------------------------------
-        // लॉगिन फंक्शन (बटन क्लिक पर)
-        // --------------------------------------------------------------
+        // --- 3. लॉगिन और साइनअप फंक्शन ---
         async function handleLogin() {
-            let emailInput = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            // Validation
-            if (!emailInput || !password) {
-                alert("कृपया ईमेल/नाम और पासवर्ड भरें");
-                return;
-            }
-            if (password.length < 6) {
-                alert("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
-                return;
-            }
-
-            // Auto-append @gmail.com अगर ईमेल फॉर्मेट नहीं है
-            if (!emailInput.includes('@')) {
-                emailInput = emailInput + '@gmail.com';
-            }
-
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
             try {
-                await auth.signInWithEmailAndPassword(emailInput, password);
-                // onAuthStateChanged संभाल लेगा डैशबोर्ड दिखाना
-            } catch (error) {
-                alert("लॉगिन में गलती: " + error.message);
-            }
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (e) { alert("गलती: " + e.message); }
         }
 
-        // --------------------------------------------------------------
-        // साइनअप फंक्शन
-        // --------------------------------------------------------------
         async function handleSignup() {
-            const name = document.getElementById('s-name').value.trim();
-            const email = document.getElementById('s-email').value.trim();
-            const password = document.getElementById('s-password').value;
-
-            // Validation
-            if (!name || !email || !password) {
-                alert("कृपया सभी फील्ड भरें");
-                return;
-            }
-            if (password.length < 6) {
-                alert("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
-                return;
-            }
-
+            const name = document.getElementById('s-name').value;
+            const email = document.getElementById('s-email').value;
+            const pass = document.getElementById('s-password').value;
             try {
-                const cred = await auth.createUserWithEmailAndPassword(email, password);
-                // Firestore में नाम सेव करो
-                await db.collection('students').doc(cred.user.uid).set({
-                    Name: name,
-                    Email: email
-                });
-                // onAuthStateChanged डैशबोर्ड दिखा देगा – बिना रीलोड के
-            } catch (error) {
-                alert("खाता बनाने में गलती: " + error.message);
-            }
+                const res = await auth.createUserWithEmailAndPassword(email, pass);
+                await db.collection('students').doc(res.user.uid).set({ Name: name, Email: email });
+            } catch (e) { alert("गलती: " + e.message); }
         }
 
-        // --------------------------------------------------------------
-        // डैशबोर्ड दिखाने का फंक्शन
-        // --------------------------------------------------------------
-        function showDashboard(user) {
-            authScreen.classList.add('hidden');
-            welcomeScreen.classList.remove('hidden');
-            // ईमेल से पहला भाग निकालकर दिखाएँ (जैसे "राहुल")
-            const displayName = user.email ? user.email.split('@')[0] : 'छात्र';
-            userNameDisplay.innerText = displayName;
+        // --- 4. Google लॉगिन (चूँकि आपने इसे इनेबल कर लिया है) ---
+        async function handleGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+            } catch (e) { alert("Google गलती: " + e.message); }
         }
 
-        // --------------------------------------------------------------
-        // लॉगआउट
-        // --------------------------------------------------------------
-        function logout() {
-            auth.signOut();  // onAuthStateChanged अपने आप स्क्रीन बदल देगा
-        }
+        // --- 5. Event Listeners ---
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+        document.getElementById('signupBtn').addEventListener('click', handleSignup);
+        document.getElementById('googleBtn').addEventListener('click', handleGoogle);
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
-        // --------------------------------------------------------------
-        // टॉगल UI (Login / Signup)
-        // --------------------------------------------------------------
-        function toggleUI(showSignup) {
-            if (showSignup) {
-                // Signup फॉर्म दिखाओ
-                loginSection.classList.add('hidden');
-                signupSection.classList.remove('hidden');
-                titleEl.innerText = "रजिस्टर करें";
-                toggleText.innerHTML = 'पहले से खाता है? <a href="javascript:void(0)" id="toggleLink" style="color:var(--primary);">लॉगिन करें</a>';
-                // नए लिंक पर इवेंट लगाओ
-                document.getElementById('toggleLink').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleUI(false);
-                });
-            } else {
-                // Login फॉर्म दिखाओ
-                loginSection.classList.remove('hidden');
-                signupSection.classList.add('hidden');
-                titleEl.innerText = "लॉगिन करें";
-                toggleText.innerHTML = 'खाता नहीं है? <a href="javascript:void(0)" id="toggleLink" style="color:var(--primary);">रजिस्टर करें</a>';
-                document.getElementById('toggleLink').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleUI(true);
-                });
-            }
-        }
-
-        // --------------------------------------------------------------
-        // Event Listeners
-        // --------------------------------------------------------------
-        loginBtn.addEventListener('click', handleLogin);
-        signupBtn.addEventListener('click', handleSignup);
-        logoutBtn.addEventListener('click', logout);
-
-        // टॉगल लिंक (पहली बार के लिए)
-        toggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            // पता करो कि अभी कौन सा सेक्शन दिख रहा है
-            const isSignupVisible = !signupSection.classList.contains('hidden');
-            toggleUI(!isSignupVisible);  // उल्टा कर दो
-        });
-
-        // एंटर की से फॉर्म सबमिट न हो (बटन पहले से ही type="button" हैं)
-        // वैकल्पिक: Enter दबाने पर भी कार्य करें
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    if (!signupSection.classList.contains('hidden')) {
-                        handleSignup();
-                    } else {
-                        handleLogin();
-                    }
-                }
-            });
+        // UI Toggle
+        document.getElementById('toggleLink').addEventListener('click', () => {
+            const isLogin = !document.getElementById('loginSection').classList.contains('hidden');
+            document.getElementById('loginSection').classList.toggle('hidden', isLogin);
+            document.getElementById('signupSection').classList.toggle('hidden', !isLogin);
+            document.getElementById('title').innerText = isLogin ? "रजिस्टर करें" : "लॉगिन करें";
+            document.getElementById('toggleLink').innerText = isLogin ? "लॉगिन करें" : "रजिस्टर करें";
         });
     </script>
 </body>
