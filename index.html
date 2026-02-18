@@ -3,108 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek AI · Core Fixed</title>
+    <title>Vivek AI · Auto-Healing Core</title>
     <style>
         :root { --primary: #ff4444; --bg: #0d1117; --card: #161b22; --text: #c9d1d9; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); padding: 20px; }
         .dashboard { max-width: 900px; margin: auto; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .panel { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
-        select, textarea { width: 100%; background: #010409; border: 1px solid #30363d; border-radius: 8px; padding: 12px; color: white; margin-bottom: 15px; }
         .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .error-log { background: #3e1b1b; border: 1px solid #ff4444; color: #ffaaaa; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; font-size: 0.85rem; }
-        .output { background: #010409; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; border-left: 4px solid var(--primary); }
+        .status-bar { font-size: 0.8rem; margin-bottom: 10px; color: #8b949e; }
+        .error-log { background: #3e1b1b; border: 1px solid #ff4444; color: #ffaaaa; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        textarea { width: 100%; background: #010409; border: 1px solid #30363d; border-radius: 8px; padding: 12px; color: white; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
     <div class="panel">
-        <h2 style="color: white; margin-bottom: 15px;">VIVEK AI CORE</h2>
-        <select id="level">
-            <option value="School">School (KG-12)</option>
-            <option value="University">University (Shivaji College)</option>
-            <option value="NTPC">Railway NTPC / Govt Exams</option>
-        </select>
-        <textarea id="query" rows="4" placeholder="Physics, Maths या NTPC का सवाल लिखें..."></textarea>
-        <button class="btn" onclick="runAnalysis()" id="btn">ANALYZE DATA</button>
-
+        <div class="status-bar">🚀 SYSTEM MODE: <span id="model-name" style="color:var(--primary)">Checking...</span></div>
+        <textarea id="query" rows="4" placeholder="Physics, Maths या NTPC सवाल लिखें..."></textarea>
+        <button class="btn" onclick="autoHealLaunch()" id="btn">ANALYZE WITH AUTO-HEAL</button>
         <div id="err" class="error-log"></div>
-        <div id="out" class="output"></div>
+        <div id="out" style="background:#010409; padding:15px; border-radius:8px; margin-top:15px; display:none; border-left:4px solid var(--primary)"></div>
     </div>
 
     <div class="panel" style="text-align: center;">
         <div id="icon" style="font-size: 3rem;">👶</div>
         <h3 id="rank">RANK: NEW BORN</h3>
-        <div style="margin-top: 15px; font-size: 0.9rem;">
-            Topics Mastered: <b id="count">0</b>
-        </div>
+        <p>Topics: <b id="count">0</b></p>
     </div>
 </div>
 
 <script>
     // आपकी वर्किंग API Key
     const API_KEY = "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";
+    
+    // बैकअप मॉडल्स की लिस्ट (अगर एक फेल हो तो दूसरा चलेगा)
+    const MODELS = [
+        "google/gemini-2.0-flash-lite-preview-02-05:free",
+        "google/gemini-2.0-pro-exp-02-05:free",
+        "deepseek/deepseek-r1:free"
+    ];
 
-    async function runAnalysis() {
+    async function autoHealLaunch() {
         const input = document.getElementById('query').value.trim();
+        if(!input) return alert("टॉपिक लिखें!");
+        
         const btn = document.getElementById('btn');
         const errBox = document.getElementById('err');
         const outBox = document.getElementById('out');
-
-        if(!input) return alert("टॉपिक लिखें!");
-
-        // Reset UI
+        
+        btn.disabled = true;
         errBox.style.display = 'none';
         outBox.style.display = 'none';
-        btn.innerText = "CONNECTING AI NODES...";
-        btn.disabled = true;
 
-        try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    // फिक्स्ड मॉडल एंडपॉइंट
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                    "messages": [{"role": "user", "content": input}]
-                })
-            });
+        // मॉडल्स को एक-एक करके ट्राई करें जब तक सफलता न मिले
+        for (let model of MODELS) {
+            try {
+                document.getElementById('model-name').innerText = `TRYING ${model.split('/')[1]}...`;
+                
+                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ "model": model, "messages": [{"role": "user", "content": input}] })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || "Failed");
 
-            if (!res.ok) {
-                throw new Error(data.error?.message || `Error ${res.status}`);
+                // सफलता मिलने पर यहाँ रुकें
+                outBox.innerText = data.choices[0].message.content;
+                outBox.style.display = 'block';
+                document.getElementById('model-name').innerText = `${model.split('/')[1]} ACTIVE ✓`;
+                saveProgress(input);
+                break; 
+
+            } catch (e) {
+                console.log(`Failed with ${model}, trying next...`);
+                errBox.style.display = 'block';
+                errBox.innerHTML = `⚠️ <b>AUTO-HEALING:</b> ${model} failed, switching...`;
             }
-
-            outBox.innerText = data.choices[0].message.content;
-            outBox.style.display = 'block';
-
-            // याददाश्त अपडेट करें
-            let brain = JSON.parse(localStorage.getItem('v_core_fixed') || '[]');
-            brain.push(input);
-            localStorage.setItem('v_core_fixed', JSON.stringify(brain));
-            updateStats();
-
-        } catch (e) {
-            errBox.style.display = 'block';
-            errBox.innerHTML = `⚠️ <b>FIX NEEDED:</b><br>${e.message}`;
-        } finally {
-            btn.innerText = "ANALYZE DATA";
-            btn.disabled = false;
         }
+        btn.disabled = false;
+        btn.innerText = "ANALYZE WITH AUTO-HEAL";
+    }
+
+    function saveProgress(q) {
+        let brain = JSON.parse(localStorage.getItem('v_auto_heal') || '[]');
+        brain.push(q);
+        localStorage.setItem('v_auto_heal', JSON.stringify(brain));
+        updateStats();
     }
 
     function updateStats() {
-        const brain = JSON.parse(localStorage.getItem('v_core_fixed') || '[]');
+        const brain = JSON.parse(localStorage.getItem('v_auto_heal') || '[]');
         document.getElementById('count').innerText = brain.length;
-        if(brain.length >= 5) {
-            document.getElementById('rank').innerText = "RANK: JUNIOR ANALYST";
-            document.getElementById('icon').innerText = "👦";
-        }
+        if(brain.length >= 5) { document.getElementById('rank').innerText = "RANK: JUNIOR ANALYST"; document.getElementById('icon').innerText = "👦"; }
     }
     window.onload = updateStats;
 </script>
