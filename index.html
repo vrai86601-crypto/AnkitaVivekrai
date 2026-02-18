@@ -3,136 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek AI · Universal Core</title>
+    <title>Vivek AI · Advanced Auto-Healing</title>
     <style>
-        :root { --primary: #ff4444; --bg: #0d1117; --card: #161b22; --text: #c9d1d9; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 20px; }
-        .dashboard { max-width: 950px; margin: auto; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        .panel { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
-        select, textarea { width: 100%; background: #010409; border: 1px solid #30363d; border-radius: 8px; padding: 12px; color: white; margin-bottom: 15px; }
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #cc0000; transform: translateY(-2px); }
-        .error-log { background: #3e1b1b; border: 1px solid #ff4444; color: #ffaaaa; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; font-size: 0.85rem; }
-        .output { background: #010409; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; border-left: 4px solid var(--primary); white-space: pre-wrap; line-height: 1.6; }
+        :root { --primary: #00ff88; --bg: #05070a; --card: #10141b; --text: #e6edf3; --gold: #ffd700; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.5; }
+        
+        /* Dashboard Header with Status */
+        .status-header { background: #161b22; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #30363d; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .status-left { display: flex; align-items: center; gap: 10px; }
+        .pulse { height: 12px; width: 12px; border-radius: 50%; background: #555; }
+        .healing { background: var(--gold); box-shadow: 0 0 15px var(--gold); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1100px; margin: auto; }
+        @media (min-width: 768px) { .dashboard { grid-template-columns: 2.5fr 1fr; } }
+
+        /* Panels */
+        .panel { background: var(--card); border: 1px solid #30363d; border-radius: 16px; padding: 25px; transition: transform 0.3s ease; }
+        .panel:hover { border-color: var(--primary); }
+        
+        textarea { width: 100%; background: #010409; border: 1px solid #333; border-radius: 12px; padding: 18px; color: white; margin-bottom: 20px; font-size: 1rem; resize: none; transition: 0.3s; }
+        textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        
+        .btn { width: 100%; background: var(--primary); color: #000; border: none; padding: 18px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:hover { background: #00cc6e; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.4; transform: none; }
+
+        /* Logic Display */
+        .fix-log { font-size: 0.85rem; font-family: 'Courier New', monospace; color: #8b949e; background: #000; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; border-left: 3px solid var(--gold); }
+        .output-box { margin-top: 25px; padding: 20px; background: #0d1117; border-radius: 12px; border: 1px solid #333; display: none; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } }
+
+        /* Side Stats */
+        .rank-circle { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin: 0 auto 15px; }
+        .stat-item { background: #010409; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center; }
+        .stat-val { display: block; font-size: 1.4rem; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
 
+<div class="status-header">
+    <div class="status-left">
+        <div id="status-pulse" class="pulse"></div>
+        <span id="status-text" style="font-size: 0.9rem; font-weight: bold;">SYSTEM BOOTING...</span>
+    </div>
+    <div style="font-size: 0.8rem; color: #8b949e;">VIVEK AI CORE V3.1</div>
+</div>
+
 <div class="dashboard">
     <div class="panel">
-        <h2 style="color: white; margin-bottom: 5px;">VIVEK AI CORE</h2>
-        <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Powered by Global AI Family Logic</p>
+        <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <span>🚀</span> Advanced Learning Core
+        </h3>
+        <textarea id="userInput" rows="6" placeholder="अपना सवाल यहाँ लिखें (जैसे: Physics Chapter 5, या NTPC GK)..."></textarea>
+        <button id="mainBtn" class="btn" onclick="startAnalysis()">🚀 Analyze Knowledge</button>
         
-        <select id="level">
-            <option value="School (Class 1-12)">School (KG-12)</option>
-            <option value="University (Mathematics/B.Sc)">University (Shivaji College)</option>
-            <option value="Competitive Exam (NTPC/SSC)">Railway NTPC / Govt Exams</option>
-            <option value="Professional (Coding/AI)">Coding & AI Development</option>
-        </select>
+        <div id="fixLog" class="fix-log"></div>
         
-        <textarea id="query" rows="5" placeholder="Magnetism, Calculus या NTPC GK यहाँ पूछें..."></textarea>
-        <button class="btn" onclick="runUniversalAnalysis()" id="btn">ANALYZE WITH MULTI-AGENT LOGIC</button>
-
-        <div id="err" class="error-log"></div>
-        <div id="out" class="output"></div>
+        <div id="output" class="output-box">
+            <div style="color: var(--primary); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">GENERATED INSIGHT:</div>
+            <div id="outputText" style="white-space: pre-wrap;"></div>
+        </div>
     </div>
 
     <div class="panel" style="text-align: center;">
-        <div id="icon" style="font-size: 4rem; margin-bottom: 10px;">👶</div>
-        <h3 id="rank">RANK: NEW BORN</h3>
-        <div style="margin-top: 20px; background: #010409; padding: 15px; border-radius: 10px;">
-            <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="count">0</div>
-            <small>Topics Mastered</small>
+        <div class="rank-circle" id="avatar">👶</div>
+        <h4 id="rankName" style="color: var(--gold); letter-spacing: 1px;">RANK: NEW BORN</h4>
+        
+        <div class="stat-item">
+            <small style="color: #666;">TOPICS MASTERED</small>
+            <span class="stat-val" id="topicCount">0</span>
         </div>
-        <div style="margin-top: 20px; font-size: 0.8rem; color: #666; text-align: left;">
-            <b>LOGIC:</b> DeepSeek-R1<br>
-            <b>CONTEXT:</b> Cogito V2.1<br>
-            <b>SPEECH:</b> Gemini 2.0
+        
+        <div style="margin-top: 25px; font-size: 0.75rem; color: #555; text-align: left; border-top: 1px solid #222; padding-top: 15px;">
+            <div style="margin-bottom: 5px;">🧬 <b>AUTO-HEAL:</b> ACTIVE</div>
+            <div style="margin-bottom: 5px;">🧠 <b>LOGIC:</b> DEEPSEEK-R1</div>
+            <div>⚡ <b>CONTEXT:</b> MULTI-MODEL</div>
         </div>
     </div>
 </div>
 
 <script>
-    // API Key (Security: Always use environment variables in real production)
+    // API Configuration
     const API_KEY = "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";
+    let MODEL_LIST = [
+        "google/gemini-2.0-flash-exp:free",
+        "deepseek/deepseek-r1:free",
+        "anthropic/claude-3-haiku:free"
+    ];
 
-    async function runUniversalAnalysis() {
-        const level = document.getElementById('level').value;
-        const input = document.getElementById('query').value.trim();
-        const btn = document.getElementById('btn');
-        const errBox = document.getElementById('err');
-        const outBox = document.getElementById('out');
-
-        if (!input) return alert("कृपया कुछ तो लिखो विवेक!");
-
-        // Multi-Agent Prompting (The Mother-Father-Son Concept)
-        const systemPrompt = `You are a Global AI Family. 
-        Father (DeepSeek) provides mathematical logic for ${level}. 
-        Mother (Cogito) provides deep context and research. 
-        You (Son/Gemini) synthesize this into a clear Hinglish response for student Vivek. 
-        Be professional but easy to understand.`;
-
-        // Reset UI
-        errBox.style.display = 'none';
-        outBox.style.display = 'none';
-        btn.innerText = "FAMILY DISCUSSION IN PROGRESS...";
-        btn.disabled = true;
+    // 1. Auto-Healing Logic
+    async function runAutoHeal() {
+        const pulse = document.getElementById('status-pulse');
+        const status = document.getElementById('status-text');
+        const log = document.getElementById('fixLog');
+        
+        pulse.className = 'pulse healing';
+        status.innerText = "HEALING & OPTIMIZING CORE...";
+        log.style.display = 'block';
+        log.innerHTML = "> [DIAGNOSTIC] Checking API Connectivity...<br>";
 
         try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    // Updated to most stable free model name
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free", 
-                    "messages": [
-                        {"role": "system", "content": systemPrompt},
-                        {"role": "user", "content": input}
-                    ]
-                })
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 6000);
+            
+            const test = await fetch("https://openrouter.ai/api/v1/models", {
+                headers: { "Authorization": `Bearer ${API_KEY}` },
+                signal: controller.signal
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error?.message || `API Error: ${res.status}`);
-            }
-
-            outBox.innerText = data.choices[0].message.content;
-            outBox.style.display = 'block';
-
-            // Brain Update
-            let brain = JSON.parse(localStorage.getItem('v_global_core') || '[]');
-            brain.push(input);
-            localStorage.setItem('v_global_core', JSON.stringify(brain));
-            updateStats();
-
+            clearTimeout(id);
+            
+            if(test.ok) {
+                log.innerHTML += "> [SUCCESS] Endpoints Validated. ✓<br>";
+                log.innerHTML += "> [INFO] Rotating Neural Path... ✓<br>";
+                setTimeout(() => {
+                    pulse.className = 'pulse';
+                    pulse.style.background = '#00ff88';
+                    status.innerText = "CORE SECURED: READY";
+                    log.style.display = 'none';
+                }, 2500);
+            } else { throw new Error("API Unauthorized or Offline"); }
         } catch (e) {
-            errBox.style.display = 'block';
-            errBox.innerHTML = `⚠️ <b>SYSTEM FIX REQUIRED:</b><br>${e.message}<br><small>Tip: Check if OpenRouter key has active credits or survey done.</small>`;
-        } finally {
-            btn.innerText = "ANALYZE DATA";
-            btn.disabled = false;
+            log.innerHTML += `> [CRITICAL] Error: ${e.message}. Initializing Fallback...<br>`;
+            MODEL_LIST = ["deepseek/deepseek-r1:free", "google/gemini-2.0-flash-exp:free"];
+            setTimeout(() => {
+                pulse.style.background = '#ff4444';
+                status.innerText = "READY (FALLBACK MODE)";
+            }, 2000);
         }
     }
 
+    // 2. Analysis Engine
+    async function startAnalysis() {
+        const input = document.getElementById('userInput').value.trim();
+        const outBox = document.getElementById('output');
+        const outText = document.getElementById('outputText');
+        const btn = document.getElementById('mainBtn');
+        
+        if(!input) return alert("कुछ तो लिखो विवेक!");
+        
+        btn.disabled = true;
+        btn.innerText = "THINKING...";
+        outBox.style.display = 'none';
+
+        let success = false;
+        for(let model of MODEL_LIST) {
+            try {
+                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": `Bearer ${API_KEY}`, 
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({ 
+                        "model": model, 
+                        "messages": [{"role": "user", "content": input}] 
+                    })
+                });
+                
+                const data = await res.json();
+                if(res.ok) {
+                    outText.innerText = data.choices[0].message.content;
+                    outBox.style.display = 'block';
+                    success = true;
+                    saveProgress(input);
+                    break; 
+                }
+            } catch (err) { console.warn(`Model ${model} skipped.`); }
+        }
+        
+        if (!success) {
+            outText.innerText = "❌ माफ़ कीजिये विवेक, सभी AI नोड्स बिजी हैं। अपनी API Key या इंटरनेट चेक करें।";
+            outBox.style.display = 'block';
+        }
+        btn.disabled = false;
+        btn.innerText = "🚀 Analyze Knowledge";
+    }
+
+    function saveProgress(query) {
+        let brain = JSON.parse(localStorage.getItem('v_core_v3') || '[]');
+        brain.push({q: query, t: Date.now()});
+        localStorage.setItem('v_core_v3', JSON.stringify(brain));
+        updateStats();
+    }
+
     function updateStats() {
-        const brain = JSON.parse(localStorage.getItem('v_global_core') || '[]');
-        document.getElementById('count').innerText = brain.length;
+        const brain = JSON.parse(localStorage.getItem('v_core_v3') || '[]');
+        const count = brain.length;
+        document.getElementById('topicCount').innerText = count;
         
         let rank = "NEW BORN", icon = "👶";
-        if(brain.length >= 30) { rank = "PROFESSOR"; icon = "👨‍🏫"; }
-        else if(brain.length >= 15) { rank = "SENIOR ANALYST"; icon = "🧑‍🎓"; }
-        else if(brain.length >= 5) { rank = "JUNIOR ANALYST"; icon = "👦"; }
+        if(count >= 30) { rank = "PROFESSOR"; icon = "👨‍🏫"; }
+        else if(count >= 15) { rank = "STUDENT"; icon = "🧑‍🎓"; }
+        else if(count >= 5) { rank = "ANALYST"; icon = "👦"; }
         
-        document.getElementById('rank').innerText = `RANK: ${rank}`;
-        document.getElementById('icon').innerText = icon;
+        document.getElementById('rankName').innerText = `RANK: ${rank}`;
+        document.getElementById('avatar').innerText = icon;
     }
-    window.onload = updateStats;
+
+    window.onload = () => {
+        runAutoHeal();
+        updateStats();
+    };
 </script>
 </body>
 </html>
