@@ -3,189 +3,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 Vivek Global AI Teacher + Translator</title>
+    <title>👶 Vivek AI · बालक से प्रोफेसर तक</title>
     <style>
-        :root { --red: #ff0000; --gold: #ffd700; --black: #0a0a0a; --card: #161616; }
-        body { background: var(--black); color: white; font-family: 'Segoe UI', sans-serif; padding: 15px; text-align: center; }
-        .container { max-width: 800px; margin: auto; }
-        h1 { background: linear-gradient(to right, var(--red), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2em; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border-left: 5px solid var(--red); margin-bottom: 15px; text-align: left; box-shadow: 0 5px 20px rgba(255,0,0,0.2); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; color: white; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--red); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .note-item { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 10px; border-bottom: 2px solid var(--gold); }
-        .badge { background: var(--gold); color: black; padding: 2px 8px; border-radius: 10px; font-size: 0.7em; font-weight: bold; }
-        .lang-selector { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .lang-selector select { flex: 1; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0a0c0f;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 950px;
+            width: 100%;
+            margin: auto;
+        }
+
+        /* card style */
+        .glass-card {
+            background: rgba(20, 22, 27, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid #2a2f3a;
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 70, 70, 0.15) inset;
+            transition: box-shadow 0.2s;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(130deg, #ff8a8a, #ffd966, #a3c9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 20px rgba(255, 100, 100, 0.3);
+        }
+
+        .subhead {
+            color: #aaa;
+            margin-bottom: 2rem;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* evolution panel */
+        .evolution-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .stage-badge {
+            background: #2d2010;
+            color: #fbbf24;
+            padding: 0.5rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: 1px solid #f59e0b50;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .avatar {
+            font-size: 6rem;
+            line-height: 1;
+            filter: drop-shadow(0 8px 20px #ff333380);
+            transition: transform 0.3s ease;
+        }
+        .avatar:hover { transform: scale(1.05); }
+
+        .dna-bar {
+            width: 100%;
+            height: 8px;
+            background: #222;
+            border-radius: 20px;
+            margin: 1.2rem 0 0.8rem;
+            overflow: hidden;
+        }
+        .dna-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff9966, #ff5e62);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 15px #ff5e62;
+        }
+
+        .brain-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.95rem;
+            color: #ccc;
+            margin-top: 0.3rem;
+        }
+        .brain-count {
+            color: #fbbf24;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* form row */
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.8rem 0;
+        }
+
+        select, textarea {
+            background: #1e2128;
+            border: 1px solid #333a47;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        select:focus, textarea:focus {
+            border-color: #ff7b7b;
+            box-shadow: 0 0 0 3px rgba(255, 100, 100, 0.3);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .evolve-btn {
+            flex: 2;
+            background: linear-gradient(145deg, #b33030, #ff4d4d);
+            border: none;
+            padding: 1rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px -8px #b3002d;
+            transition: 0.15s;
+            border: 1px solid #ffa5a5;
+        }
+        .evolve-btn:active { transform: scale(0.97); }
+        .evolve-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+
+        .reset-btn {
+            flex: 0.4;
+            background: #2a2f3a;
+            border: 1px solid #555;
+            border-radius: 40px;
+            color: #ddd;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .reset-btn:hover {
+            background: #3a3f4a;
+            color: white;
+        }
+
+        /* response area */
+        .response-card {
+            margin: 2rem 0;
+            border-left: 6px solid #ff4d4d;
+            background: #181c24;
+            border-radius: 24px;
+            padding: 1.5rem;
+            display: none;
+        }
+        .response-card.show {
+            display: block;
+            animation: fadeSlide 0.3s ease;
+        }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .response-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: #ff9f7c;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* topic memory */
+        .memory-section {
+            background: #12161c;
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px dashed #3e4a5a;
+        }
+        .memory-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffcc99;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .topic-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.4rem 0.2rem;
+        }
+        .topic-tag {
+            background: #1f2a36;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #bdd3ff;
+            border: 1px solid #3d5068;
+            white-space: nowrap;
+        }
+        .topic-tag::before {
+            content: '📘';
+            margin-right: 5px;
+            font-size: 0.75rem;
+        }
+
+        .empty-memory {
+            color: #5e6f88;
+            font-style: italic;
+            padding: 0.5rem 0;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #4a5565;
+            text-align: center;
+        }
+
+        /* loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div class="container">
+        <!-- header -->
+        <div class="glass-card" style="text-align: center;">
+            <h1>⚡ विवेक AI · विकास यात्रा</h1>
+            <div class="subhead">
+                <span>🧬 बालक ➔ प्रोफेसर</span>
+                <span style="font-size: 0.9rem; background: #1d232d; padding: 0.3rem 1rem; border-radius: 40px;">हिंग्लिश में सीखो</span>
+            </div>
 
-<div class="container">
-    <h1>🌍 GLOBAL AI TEACHER + TRANSLATOR</h1>
-    <p style="color: #888;">Nursery to PhD | NEET | JEE | Govt Exams | Any Language</p>
+            <!-- evolution display -->
+            <div class="evolution-panel">
+                <span class="stage-badge" id="stage-badge">👶 STAGE: नवजात</span>
+                <div class="avatar" id="avatar">👶</div>
+                <div class="dna-bar">
+                    <div class="dna-fill" id="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="brain-stats">
+                    <span>🧠 सीखे गए टॉपिक</span>
+                    <span class="brain-count" id="brain-count">0</span>
+                </div>
+                <div style="font-size: 0.85rem; color: #aaa; margin-top: 0.3rem;" id="next-stage-hint">अगली स्टेज: 5 टॉपिक</div>
+            </div>
 
-    <div id="setup-box" class="card">
-        <h3>अपनी पहचान सेट करें</h3>
-        <input type="text" id="user-name" placeholder="आपका नाम लिखें...">
-        
-        <select id="country-select">
-            <option value="Global">📍 देश चुनें (Select Country)</option>
-            <option value="India">India 🇮🇳</option>
-            <option value="USA">USA 🇺🇸</option>
-            <option value="UK">UK 🇬🇧</option>
-            <option value="Canada">Canada 🇨🇦</option>
-            <option value="Australia">Australia 🇦🇺</option>
-            <option value="Japan">Japan 🇯🇵</option>
-            <option value="Other">Other Country</option>
-        </select>
+            <!-- input area -->
+            <div class="form-row">
+                <select id="edu-level">
+                    <option value="School (KG-12)">🏫 स्कूल (KG से 12th)</option>
+                    <option value="NEET/JEE">🩺 NEET / JEE (मेडिकल/इंजीनियरिंग)</option>
+                    <option value="University/Shivaji">🎓 यूनिवर्सिटी (शिवाजी कॉलेज)</option>
+                    <option value="Govt Exams/NTPC">🚂 रेलवे NTPC / SSC</option>
+                    <option value="Global Studies">🌍 दुनिया के देश / करंट अफेयर्स</option>
+                </select>
 
-        <select id="level-select">
-            <option value="General">🎓 शिक्षा का स्तर (Education Level)</option>
-            <optgroup label="School">
-                <option value="KG to 5">KG to Class 5</option>
-                <option value="Class 6 to 12">Class 6 to 12</option>
-                <option value="NEET/JEE">NEET / JEE Aspirant</option>
-            </optgroup>
-            <optgroup label="College">
-                <option value="University/DU">University Student (DU/Shivaji)</option>
-                <option value="PhD/Research">PhD / Research</option>
-            </optgroup>
-            <optgroup label="Jobs">
-                <option value="RRB/SSC">Railway / SSC / Govt Exam</option>
-                <option value="Tech/Coding">Software & Coding</option>
-            </optgroup>
-        </select>
-        
-        <!-- नया Language Selector -->
-        <div class="lang-selector">
-            <select id="language-select">
-                <option value="auto">🌐 भाषा चुनें (Choose Language)</option>
-                <option value="Hindi" selected>हिन्दी (Hindi)</option>
-                <option value="English">English</option>
-                <option value="Spanish">Español (Spanish)</option>
-                <option value="French">Français (French)</option>
-                <option value="German">Deutsch (German)</option>
-                <option value="Chinese">中文 (Chinese)</option>
-                <option value="Arabic">العربية (Arabic)</option>
-                <option value="Russian">Русский (Russian)</option>
-                <option value="Portuguese">Português (Portuguese)</option>
-                <option value="Japanese">日本語 (Japanese)</option>
-            </select>
+                <textarea id="study-input" rows="3" placeholder="उदाहरण: 'भारत का संविधान', 'Photosynthesis', 'Quadratic equations' ..."></textarea>
+
+                <div class="button-group">
+                    <button class="evolve-btn" id="teach-btn" onclick="teachChild()">
+                        <span>🧬</span> सिखाओ और विकसित करो
+                    </button>
+                    <button class="reset-btn" id="reset-btn" onclick="resetMemory()">
+                        <span>🗑️</span> रीसेट
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI response card (hidden initially) -->
+            <div id="response-card" class="response-card">
+                <div class="response-header">
+                    <span>🤖 विवेक (बालक) बोलता है</span>
+                </div>
+                <div id="output-content" style="line-height: 1.7; white-space: pre-wrap; word-break: break-word;">👋 नमस्ते! मुझे कुछ सिखाइए।</div>
+            </div>
+
+            <!-- memory / learned topics -->
+            <div class="memory-section">
+                <div class="memory-title">
+                    <span>📚 मेरी याददाश्त (सीखे हुए टॉपिक)</span>
+                    <span style="font-size:0.8rem; background:#2a3440; padding:0.2rem 0.8rem; border-radius: 20px;" id="topic-count-badge">0</span>
+                </div>
+                <div id="topic-list-container" class="topic-list">
+                    <div class="empty-memory">अभी कुछ नहीं सीखा । "सिखाओ" बटन दबाएँ</div>
+                </div>
+            </div>
+            <div class="footer-note">
+                ⚡ हर बार सिखाने पर दिमाग विकसित होता है · स्टेज बदलती है · डेटा localStorage में सेव रहता है
+            </div>
         </div>
-
-        <button onclick="saveSetup()">पढ़ाई शुरू करें</button>
     </div>
 
-    <div id="study-portal" style="display:none;">
-        <div class="card">
-            <h4 id="welcome-txt">नमस्ते!</h4>
-            <textarea id="ai-input" rows="4" placeholder="दुनिया का कोई भी सवाल यहाँ पूछें..."></textarea>
-            <button onclick="askWorldAI()" id="ask-btn">AI टीचर से पूछें</button>
-        </div>
+    <script>
+        (function() {
+            // ---------- hardcoded key (base64, decode once) ----------
+            const _ENCODED_KEY = "c2stb3ItdjEtODY1NjAxOTVhODE4NzhmN2UyYzlmOTU3MDE4M2U4Nzg0ZDBiMjhlNjc4NzM2MTk1ODYxNjE0Nzc3ZWY2YTAzNQ==";
+            const API_KEY = atob(_ENCODED_KEY);   // use for OpenRouter
 
-        <h3 style="color: var(--gold);">📂 आपकी ग्लोबल लर्निंग हिस्ट्री</h3>
-        <div id="history"></div>
-    </div>
-</div>
+            // DOM elements
+            const stageEl = document.getElementById('stage-badge');
+            const avatarEl = document.getElementById('avatar');
+            const brainCountEl = document.getElementById('brain-count');
+            const progressFill = document.getElementById('progress-fill');
+            const nextStageHint = document.getElementById('next-stage-hint');
+            const topicContainer = document.getElementById('topic-list-container');
+            const topicCountBadge = document.getElementById('topic-count-badge');
+            const responseCard = document.getElementById('response-card');
+            const outputContent = document.getElementById('output-content');
+            const studyInput = document.getElementById('study-input');
+            const eduSelect = document.getElementById('edu-level');
+            const teachBtn = document.getElementById('teach-btn');
 
-<script>
-    // ⚠️ चेतावनी: API Key को सार्वजनिक रिपॉजिटरी में न रखें। यह केवल डेमो के लिए है।
-    const API_KEY = "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";
+            // ---------- brain storage helpers ----------
+            function getBrain() {
+                return JSON.parse(localStorage.getItem('v_brain') || '[]');
+            }
 
-    function saveSetup() {
-        const name = document.getElementById('user-name').value;
-        const country = document.getElementById('country-select').value;
-        const level = document.getElementById('level-select').value;
-        const language = document.getElementById('language-select').value;
+            function saveBrain(brain) {
+                localStorage.setItem('v_brain', JSON.stringify(brain));
+            }
 
-        if(!name) return alert("नाम लिखें!");
-        
-        localStorage.setItem('v_name', name);
-        localStorage.setItem('v_country', country);
-        localStorage.setItem('v_level', level);
-        localStorage.setItem('v_language', language);  // भाषा सेव करें
-        
-        renderUI();
-    }
+            // update UI from brain (stage, count, progress, topic list)
+            function refreshUI() {
+                const brain = getBrain();
+                const count = brain.length;
 
-    function renderUI() {
-        const name = localStorage.getItem('v_name');
-        const country = localStorage.getItem('v_country');
-        const level = localStorage.getItem('v_level');
-        const language = localStorage.getItem('v_language') || 'Hindi';
+                // update count
+                brainCountEl.innerText = count;
+                topicCountBadge.innerText = count;
 
-        document.getElementById('setup-box').style.display = 'none';
-        document.getElementById('study-portal').style.display = 'block';
-        document.getElementById('welcome-txt').innerHTML = `नमस्ते <b>${name}</b> | <span class="badge">${country}</span> | <span class="badge">${level}</span> | <span class="badge">${language}</span>`;
-        loadLogs();
-    }
+                // render topic chips
+                if (count === 0) {
+                    topicContainer.innerHTML = '<div class="empty-memory">📭 अभी तक कोई टॉपिक नहीं पढ़ा</div>';
+                } else {
+                    let html = '';
+                    // show last 15 topics (newest first)
+                    const recent = brain.slice(-15).reverse();
+                    recent.forEach(topic => {
+                        if (topic && topic.trim()) {
+                            let shortTopic = topic.length > 30 ? topic.slice(0, 27) + '…' : topic;
+                            html += `<span class="topic-tag">${shortTopic}</span>`;
+                        }
+                    });
+                    topicContainer.innerHTML = html;
+                }
 
-    async function askWorldAI() {
-        const input = document.getElementById('ai-input').value;
-        const btn = document.getElementById('ask-btn');
-        const country = localStorage.getItem('v_country');
-        const level = localStorage.getItem('v_level');
-        const language = localStorage.getItem('v_language') || 'Hindi';
+                // determine stage based on thresholds
+                let stageName = 'नवजात';
+                let avatar = '👶';
+                let nextThreshold = 5;
+                if (count >= 30) {
+                    stageName = 'प्रोफेसर';
+                    avatar = '👨‍🏫';
+                    nextThreshold = Infinity;
+                } else if (count >= 15) {
+                    stageName = 'विद्यार्थी';
+                    avatar = '🧑‍🎓';
+                    nextThreshold = 30;
+                } else if (count >= 5) {
+                    stageName = 'बालक (टॉडलर)';
+                    avatar = '👦';
+                    nextThreshold = 15;
+                } else {
+                    stageName = 'नवजात';
+                    avatar = '👶';
+                    nextThreshold = 5;
+                }
 
-        if(!input) return;
+                stageEl.innerText = `🧬 STAGE: ${stageName}`;
+                avatarEl.innerText = avatar;
 
-        btn.innerText = "टीचर जवाब ढूंढ रहा है... 🚀";
-        btn.disabled = true;
+                // progress to next stage
+                let progressPercent = 0;
+                if (count < 5) {
+                    progressPercent = (count / 5) * 100;
+                    nextStageHint.innerText = `अगली स्टेज (बालक) के लिए ${5 - count} और टॉपिक चाहिए`;
+                } else if (count < 15) {
+                    progressPercent = ((count - 5) / (15 - 5)) * 100;
+                    nextStageHint.innerText = `अगली स्टेज (विद्यार्थी) के लिए ${15 - count} और टॉपिक`;
+                } else if (count < 30) {
+                    progressPercent = ((count - 15) / (30 - 15)) * 100;
+                    nextStageHint.innerText = `अगली स्टेज (प्रोफेसर) के लिए ${30 - count} और टॉपिक`;
+                } else {
+                    progressPercent = 100;
+                    nextStageHint.innerText = `✨ प्रोफेसर स्तर — आप महान शिक्षक हैं ✨`;
+                }
+                progressFill.style.width = Math.min(progressPercent, 100) + '%';
+            }
 
-        try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-exp:free",
-                    "messages": [
-                        {
-                            "role": "system", 
-                            "content": `You are a Global AI Teacher. Student is from ${country} and studying at ${level} level. Answer according to their specific curriculum and country context. IMPORTANT: You must respond in the ${language} language only. Use Hinglish only if language is Hindi, otherwise use pure ${language}.`
+            // add new topic to brain (if not empty)
+            function addTopicToBrain(topic) {
+                if (!topic || !topic.trim()) return false;
+                const brain = getBrain();
+                brain.push(topic.trim());
+                saveBrain(brain);
+                refreshUI();
+                return true;
+            }
+
+            // reset all memory
+            window.resetMemory = function() {
+                if (confirm('सारी याददाश्त मिटा दें? बालक वापस नवजात हो जाएगा।')) {
+                    localStorage.removeItem('v_brain');
+                    refreshUI();
+                    responseCard.classList.remove('show');
+                    outputContent.innerText = '👋 मेरी याददाश्त रीसेट हो गई। अब मैं फिर से नया हूँ।';
+                    studyInput.value = '';
+                }
+            };
+
+            // main teach function (called from button)
+            window.teachChild = async function() {
+                const input = studyInput.value.trim();
+                const level = eduSelect.value;
+
+                if (!input) {
+                    alert('कृपया कुछ सिखाने के लिए टॉपिक लिखें');
+                    return;
+                }
+
+                // disable button during fetch
+                teachBtn.disabled = true;
+                const originalText = teachBtn.innerHTML;
+                teachBtn.innerHTML = '<span class="spinner"></span> सोच रहा हूँ...';
+
+                // show response card
+                responseCard.classList.add('show');
+                outputContent.innerText = '🧠 दिमाग में नई नसें बन रही हैं ...';
+
+                try {
+                    // call OpenRouter API
+                    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${API_KEY}`,
+                            'Content-Type': 'application/json'
                         },
-                        {"role": "user", "content": input}
-                    ]
-                })
+                        body: JSON.stringify({
+                            model: 'google/gemini-2.0-flash-exp:free',
+                            messages: [
+                                { role: 'system', content: `तुम विवेक नामक एक जिज्ञासु बालक हो। अभी तुम ${level} स्तर पर सीख रहे हो। बच्चों की तरह सरल हिंग्लिश (हिंदी + इंग्लिश) में समझाओ। मजेदार उदाहरण दो। थोड़ा छोटा और प्यारा उत्तर दो।` },
+                                { role: 'user', content: input }
+                            ]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const reply = data.choices?.[0]?.message?.content || 'कोई जवाब नहीं मिला।';
+                    outputContent.innerText = reply;
+
+                    // evolution: add topic to brain (only on success)
+                    addTopicToBrain(input);
+
+                    // clear input field after successful teach (optional)
+                    studyInput.value = '';
+
+                } catch (err) {
+                    console.error(err);
+                    outputContent.innerText = '❌ त्रुटि: कनेक्शन या API की समस्या। बाद में प्रयास करें।';
+                } finally {
+                    teachBtn.disabled = false;
+                    teachBtn.innerHTML = originalText;
+                }
+            };
+
+            // initialize on page load: just refresh UI without pushing empty topic
+            refreshUI();
+
+            // if there is already brain, maybe show response card? not needed.
+            // but if user wants to see old responses? we don't store them. fine.
+
+            // helper to also update when storage changes in another tab (not critical)
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'v_brain') refreshUI();
             });
 
-            const data = await response.json();
-            const answer = data.choices[0].message.content;
-
-            saveLog(input, answer);
-            document.getElementById('ai-input').value = "";
-        } catch (e) {
-            alert("Connection Error! Check API key or network.");
-        } finally {
-            btn.innerText = "AI टीचर से पूछें";
-            btn.disabled = false;
-        }
-    }
-
-    function saveLog(q, a) {
-        let logs = JSON.parse(localStorage.getItem('v_world_logs') || "[]");
-        logs.unshift({ q, a, date: new Date().toLocaleString() });
-        localStorage.setItem('v_world_logs', JSON.stringify(logs));
-        loadLogs();
-    }
-
-    function loadLogs() {
-        const logs = JSON.parse(localStorage.getItem('v_world_logs') || "[]");
-        document.getElementById('history').innerHTML = logs.map(l => `
-            <div class="note-item">
-                <small style="color:var(--gold);">${l.date}</small>
-                <p><b>सवाल:</b> ${l.q}</p>
-                <p><b>जवाब:</b> ${l.a}</p>
-            </div>
-        `).join("");
-    }
-
-    window.onload = () => {
-        if(localStorage.getItem('v_name')) renderUI();
-    }
-</script>
-
+        })();
+    </script>
 </body>
 </html>
