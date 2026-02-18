@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Portal - Smart Learning</title>
+    <title>AI Study Portal — स्मार्ट लर्निंग</title>
     
+    <!-- Firebase SDK (compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
+        /* ----- modern & responsive design (same as original, kept intact) ----- */
         :root { 
             --primary: #e31e24; 
             --primary-dark: #b71c1c;
@@ -22,14 +24,14 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
             background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%); 
             color: white; 
             min-height: 100vh; 
             line-height: 1.6;
         }
         
-        /* Mobile-First Auth Screen */
+        /* auth container */
         .auth-container {
             min-height: 100vh;
             display: flex;
@@ -61,505 +63,141 @@
             background: linear-gradient(90deg, var(--primary), var(--accent));
         }
         
-        .logo {
-            font-size: 48px;
-            margin-bottom: 10px;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        .logo { font-size: 48px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         
         .form-input { 
-            width: 100%; 
-            padding: 15px 20px; 
-            margin: 10px 0; 
-            border-radius: 12px; 
-            border: 2px solid #333; 
-            background: #1a1a1a; 
-            color: white; 
-            font-size: 16px; 
+            width:100%; padding:15px 20px; margin:10px 0; border-radius:12px; 
+            border:2px solid #333; background:#1a1a1a; color:white; font-size:16px; 
             transition: all 0.3s;
         }
-        
-        .form-input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.1);
-            transform: translateY(-2px);
-        }
+        .form-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(227,30,36,0.1); transform:translateY(-2px); }
         
         .btn { 
-            width: 100%; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            font-size: 16px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 8px 0;
+            width:100%; padding:15px; border:none; border-radius:12px; cursor:pointer; 
+            font-weight:700; font-size:16px; transition:all 0.3s; display:flex;
+            align-items:center; justify-content:center; gap:10px; margin:8px 0;
         }
-        
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            color: white; 
-            box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
-        }
-        
-        .btn-primary:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(227, 30, 36, 0.5);
-        }
-        
-        .btn-google { 
-            background: white; 
-            color: #333; 
-            border: 2px solid #ddd;
-        }
-        
-        .btn-google:hover {
-            background: #f5f5f5;
-            transform: translateY(-2px);
-        }
-        
-        .btn-guest { 
-            background: transparent; 
-            color: var(--accent); 
-            border: 2px solid var(--accent); 
-        }
-        
-        .btn-guest:hover { 
-            background: var(--accent); 
-            color: #0f0f0f; 
-            transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: #aaa;
-            border: 2px solid #555;
-            font-size: 14px;
-            padding: 12px;
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .hidden { display: none !important; }
+        .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:white; box-shadow:0 4px 15px rgba(227,30,36,0.4); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(227,30,36,0.5); }
+        .btn-google { background:white; color:#333; border:2px solid #ddd; }
+        .btn-google:hover { background:#f5f5f5; transform:translateY(-2px); }
+        .btn-guest { background:transparent; color:var(--accent); border:2px solid var(--accent); }
+        .btn-guest:hover { background:var(--accent); color:#0f0f0f; transform:translateY(-2px); }
+        .btn-secondary { background:transparent; color:#aaa; border:2px solid #555; font-size:14px; padding:12px; }
+        .btn-secondary:hover { border-color:var(--primary); color:var(--primary); }
+        .hidden { display:none !important; }
         
         .divider { 
-            color: #666; 
-            margin: 25px 0; 
-            font-size: 14px; 
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            color:#666; margin:25px 0; font-size:14px; display:flex; align-items:center; gap:15px; 
         }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, #444, transparent); }
         
-        .divider::before, .divider::after { 
-            content: ''; 
-            flex: 1;
-            height: 1px; 
-            background: linear-gradient(90deg, transparent, #444, transparent); 
-        }
+        .toggle-text { margin-top:20px; color:#aaa; font-size:15px; }
+        .toggle-text a { color:var(--primary); text-decoration:none; font-weight:600; cursor:pointer; }
+        .toggle-text a:hover { text-decoration:underline; }
         
-        .toggle-text {
-            margin-top: 20px;
-            color: #aaa;
-            font-size: 15px;
-        }
-        
-        .toggle-text a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .toggle-text a:hover {
-            text-decoration: underline;
-        }
-        
-        .error-msg {
-            color: #ff6b6b;
-            font-size: 14px;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(255, 0, 0, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid #ff6b6b;
-            display: none;
-        }
-        
-        .success-msg {
-            color: #51cf66;
-            font-size: 14px;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(0, 255, 0, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid #51cf66;
-            display: none;
-        }
+        .error-msg { color:#ff6b6b; font-size:14px; margin:10px 0; padding:10px; background:rgba(255,0,0,0.1); border-radius:8px; border-left:3px solid #ff6b6b; display:none; }
+        .success-msg { color:#51cf66; font-size:14px; margin:10px 0; padding:10px; background:rgba(0,255,0,0.1); border-radius:8px; border-left:3px solid #51cf66; display:none; }
 
-        /* Dashboard Styles */
-        .dashboard { 
-            display: none;
-            min-height: 100vh;
-            animation: fadeIn 0.6s ease;
-        }
-        
-        .dashboard.active { display: block; }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        /* dashboard */
+        .dashboard { display:none; min-height:100vh; animation:fadeIn 0.6s ease; }
+        .dashboard.active { display:block; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
         
         .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 20px 30px; 
-            background: rgba(255,255,255,0.03); 
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(10px);
-            z-index: 100;
+            display:flex; justify-content:space-between; align-items:center; padding:20px 30px; 
+            background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); position:sticky; top:0;
+            backdrop-filter:blur(10px); z-index:100;
         }
-        
-        .user-info { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-        }
-        
+        .user-info { display:flex; align-items:center; gap:15px; }
         .avatar { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 20px; 
-            font-weight: bold;
-            border: 2px solid rgba(255,255,255,0.1);
+            width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;
+            border:2px solid rgba(255,255,255,0.1);
         }
+        .guest-avatar { background:linear-gradient(135deg, #ff9800, #f57c00); }
+        .guest-badge { background:linear-gradient(135deg, #ff9800, #f57c00); padding:4px 12px; border-radius:20px; font-size:11px; margin-left:8px; font-weight:700; text-transform:uppercase; }
         
-        .guest-avatar {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-        }
+        .btn-logout { background:rgba(255,255,255,0.1); color:white; border:1px solid #444; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:600; transition:all 0.3s; }
+        .btn-logout:hover { background:rgba(255,255,255,0.2); border-color:var(--primary); color:var(--primary); }
         
-        .guest-badge { 
-            background: linear-gradient(135deg, #ff9800, #f57c00); 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 11px; 
-            margin-left: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn-logout { 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
-            border: 1px solid #444;
-            padding: 10px 20px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-logout:hover { 
-            background: rgba(255,255,255,0.2);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px;
-        }
-        
-        .welcome-text {
-            margin-bottom: 30px;
-        }
-        
-        .welcome-text h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, white, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .welcome-text p {
-            color: #aaa;
-            font-size: 18px;
-        }
+        .container { max-width:1400px; margin:0 auto; padding:30px; }
+        .welcome-text { margin-bottom:30px; }
+        .welcome-text h1 { font-size:32px; margin-bottom:10px; background:linear-gradient(90deg, white, var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .welcome-text p { color:#aaa; font-size:18px; }
         
         .upgrade-banner { 
-            background: linear-gradient(135deg, rgba(227, 30, 36, 0.9), rgba(183, 28, 28, 0.9)); 
-            padding: 25px; 
-            border-radius: 20px; 
-            margin-bottom: 30px; 
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: none;
-            animation: slideDown 0.5s ease;
+            background:linear-gradient(135deg, rgba(227,30,36,0.9), rgba(183,28,28,0.9)); padding:25px; border-radius:20px; 
+            margin-bottom:30px; text-align:center; border:1px solid rgba(255,255,255,0.1); display:none; animation:slideDown 0.5s ease;
         }
+        .upgrade-banner.show { display:block; }
+        @keyframes slideDown { from{transform:translateY(-20px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+        .upgrade-banner h3 { font-size:22px; margin-bottom:10px; }
         
-        .upgrade-banner.show { display: block; }
-        
-        @keyframes slideDown { 
-            from { transform: translateY(-20px); opacity: 0; } 
-            to { transform: translateY(0); opacity: 1; } 
-        }
-        
-        .upgrade-banner h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        
-        .upgrade-banner p {
-            opacity: 0.9;
-            margin-bottom: 15px;
-        }
-        
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
-        
+        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:25px; }
         .card { 
-            background: var(--card-bg); 
-            padding: 30px; 
-            border-radius: 20px; 
-            border: 1px solid var(--border); 
-            transition: all 0.3s; 
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            background:var(--card-bg); padding:30px; border-radius:20px; border:1px solid var(--border); transition:all 0.3s; cursor:pointer;
+            position:relative; overflow:hidden;
         }
+        .card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, var(--primary), var(--accent)); transform:scaleX(0); transition:transform 0.3s; }
+        .card:hover { transform:translateY(-5px); border-color:var(--primary); box-shadow:0 20px 40px rgba(0,0,0,0.4); }
+        .card:hover::before { transform:scaleX(1); }
+        .card-icon { font-size:48px; margin-bottom:20px; display:inline-block; transition:transform 0.3s; }
+        .card:hover .card-icon { transform:scale(1.1); }
+        .card h3 { margin:0 0 12px 0; color:white; font-size:22px; }
+        .card p { color:#999; margin:0; font-size:15px; line-height:1.6; }
         
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transform: scaleX(0);
-            transition: transform 0.3s;
-        }
-        
-        .card:hover { 
-            transform: translateY(-5px); 
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .card-icon { 
-            font-size: 48px; 
-            margin-bottom: 20px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-        
-        .card:hover .card-icon {
-            transform: scale(1.1);
-        }
-        
-        .card h3 { 
-            margin: 0 0 12px 0; 
-            color: white;
-            font-size: 22px;
-        }
-        
-        .card p { 
-            color: #999; 
-            margin: 0; 
-            font-size: 15px; 
-            line-height: 1.6; 
-        }
-        
-        .progress-section {
-            margin-top: 20px;
-        }
-        
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #aaa;
-            margin-bottom: 8px;
-        }
-        
-        .progress-bar { 
-            width: 100%; 
-            height: 8px; 
-            background: #222; 
-            border-radius: 10px; 
-            overflow: hidden; 
-        }
-        
-        .progress-fill { 
-            height: 100%; 
-            background: linear-gradient(90deg, var(--primary), var(--accent)); 
-            width: 0%; 
-            transition: width 1s ease;
-            border-radius: 10px;
-        }
+        .progress-section { margin-top:20px; }
+        .progress-header { display:flex; justify-content:space-between; font-size:13px; color:#aaa; margin-bottom:8px; }
+        .progress-bar { width:100%; height:8px; background:#222; border-radius:10px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg, var(--primary), var(--accent)); width:0%; transition:width 1s ease; border-radius:10px; }
         
         .timer { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background: rgba(0,0,0,0.9); 
-            padding: 12px 24px; 
-            border-radius: 30px; 
-            border: 2px solid var(--primary); 
-            font-family: 'Courier New', monospace; 
-            font-size: 18px; 
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.9); padding:12px 24px; border-radius:30px; 
+            border:2px solid var(--primary); font-family:'Courier New', monospace; font-size:18px; font-weight:bold;
+            z-index:1000; box-shadow:0 4px 20px rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px;
         }
-        
-        .timer.warning {
-            border-color: #ff9800;
-            color: #ff9800;
-            animation: pulse 1s infinite;
-        }
-        
-        .timer.danger {
-            border-color: #ff0000;
-            color: #ff0000;
-            animation: pulse 0.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        .timer.warning { border-color:#ff9800; color:#ff9800; animation:pulse 1s infinite; }
+        .timer.danger { border-color:#ff0000; color:#ff0000; animation:pulse 0.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
         
         .feature-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
+            position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.9); display:none; align-items:center;
+            justify-content:center; z-index:2000; padding:20px;
+        }
+        .feature-modal.active { display:flex; animation:fadeIn 0.3s; }
+        .modal-content { background:#1a1a1a; padding:40px; border-radius:25px; max-width:600px; width:100%; border:1px solid var(--border); text-align:center; }
+        .modal-content h2 { font-size:28px; margin-bottom:20px; color:var(--accent); }
+        .close-modal { background:var(--primary); color:white; border:none; padding:12px 30px; border-radius:10px; cursor:pointer; font-weight:600; }
+        
+        @media (max-width:768px) {
+            .header { flex-direction:column; gap:15px; }
+            .welcome-text h1 { font-size:24px; }
+            .grid { grid-template-columns:1fr; }
+            .timer { top:auto; bottom:20px; right:20px; font-size:16px; }
         }
         
-        .feature-modal.active {
-            display: flex;
-            animation: fadeIn 0.3s;
-        }
-        
-        .modal-content {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 25px;
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-        
-        .modal-content h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
-        
-        .modal-content p {
-            color: #aaa;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-        
-        .close-modal {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .auth-box { padding: 30px 20px; }
-            .header { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .welcome-text h1 { font-size: 24px; }
-            .grid { grid-template-columns: 1fr; }
-            .timer { top: auto; bottom: 20px; right: 20px; font-size: 16px; }
-            .container { padding: 20px; }
-        }
-        
-        /* Loading Spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            display: none;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .btn.loading .spinner {
-            display: inline-block;
-        }
-        
-        .btn.loading .btn-text {
-            display: none;
-        }
+        .spinner { width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:white; animation:spin 1s ease-in-out infinite; display:none; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .btn.loading .spinner { display:inline-block; }
+        .btn.loading .btn-text { display:none; }
     </style>
 </head>
 <body>
 
-    <!-- Guest Timer -->
+    <!-- Guest Timer Display -->
     <div id="guestTimer" class="timer hidden">
         <span>⏱️</span>
         <span id="timeLeft">30:00</span>
     </div>
 
-    <!-- Auth Screen -->
+    <!-- Auth Screen (Login/Register) -->
     <div class="auth-container" id="authContainer">
         <div class="auth-box" id="authScreen">
             <div class="logo">🎓</div>
             <h2 style="font-size: 28px; margin-bottom: 8px;">AI Study Portal</h2>
-            <p style="color: #888; margin-bottom: 25px; font-size: 16px;">स्मार्ट लर्निंग का नया युग</p>
+            <p style="color: #888; margin-bottom: 25px;">स्मार्ट लर्निंग का नया युग</p>
 
             <div id="errorMsg" class="error-msg"></div>
             <div id="successMsg" class="success-msg"></div>
@@ -592,9 +230,8 @@
                     <span class="btn-text">🚀 बिना लॉगिन जारी रखें</span>
                 </button>
                 
-                <p style="margin-top: 20px; color: #666; font-size: 13px; line-height: 1.5;">
-                    🕐 गेस्ट मोड: 30 मिनट मुफ्त<br>
-                    ⭐ लॉगिन करें: अनलिमिटेड एक्सेस
+                <p style="margin-top: 20px; color: #666; font-size: 13px;">
+                    🕐 गेस्ट मोड: 30 मिनट मुफ्त<br>⭐ लॉगिन करें: अनलिमिटेड एक्सेस
                 </p>
             </div>
 
@@ -604,7 +241,7 @@
                 
                 <input type="text" id="regName" class="form-input" placeholder="👤 पूरा नाम">
                 <input type="email" id="regEmail" class="form-input" placeholder="📧 ईमेल एड्रेस">
-                <input type="password" id="regPassword" class="form-input" placeholder="🔒 पासवर्ड (6 अक्षर से ज्यादा)">
+                <input type="password" id="regPassword" class="form-input" placeholder="🔒 पासवर्ड (6+ अक्षर)">
                 <input type="password" id="regConfirmPassword" class="form-input" placeholder="🔒 पासवर्ड दोहराएं">
                 
                 <button class="btn btn-primary" id="registerBtn" type="button">
@@ -619,7 +256,7 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
+    <!-- Dashboard (Main App) -->
     <div id="dashboard" class="dashboard">
         <div class="header">
             <div class="user-info">
@@ -643,7 +280,7 @@
 
             <div id="upgradeBanner" class="upgrade-banner">
                 <h3>⏰ समय समाप्त होने वाला है!</h3>
-                <p>अनलिमिटेड एक्सेस और सभी प्रीमियम फीचर्स के लिए अभी फ्री में लॉगिन करें।</p>
+                <p>अनलिमिटेड एक्सेस और सभी प्रीमियम फीचर्स के लिए अभी लॉगिन करें।</p>
                 <button class="btn btn-primary" onclick="switchToLogin()" style="width: auto; padding: 12px 35px; margin: 0 auto;">
                     अभी लॉगिन करें
                 </button>
@@ -654,84 +291,43 @@
                     <div class="card-icon">🤖</div>
                     <h3>AI ट्यूटर</h3>
                     <p>24/7 उपलब्ध आपका निजी शिक्षक। किसी भी विषय में तुरंत मदद पाएं।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>75%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>75%</span></div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div>
                 </div>
-
                 <div class="card" onclick="openFeature('smart-notes', 'स्मार्ट नोट्स')">
                     <div class="card-icon">📝</div>
                     <h3>स्मार्ट नोट्स</h3>
                     <p>AI द्वारा जनरेटेड संक्षिप्त नोट्स, माइंड मैप्स और महत्वपूर्ण बिंदु।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>60%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>60%</span></div><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></div>
                 </div>
-
                 <div class="card" onclick="openFeature('practice-quiz', 'प्रैक्टिस क्विज')">
                     <div class="card-icon">🎯</div>
                     <h3>प्रैक्टिस क्विज</h3>
                     <p>व्यक्तिगत अभ्यास प्रश्न, मॉक टेस्ट और तुरंत परिणाम विश्लेषण।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>40%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 40%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>40%</span></div><div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div></div>
                 </div>
-
                 <div class="card" onclick="openFeature('progress-report', 'प्रगति रिपोर्ट')">
                     <div class="card-icon">📊</div>
                     <h3>प्रगति रिपोर्ट</h3>
                     <p>विस्तृत विश्लेषण, कमजोर विषयों की पहचान और सुधार योजना।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>85%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>85%</span></div><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div></div>
                 </div>
-
                 <div class="card" onclick="openFeature('doubt-solver', 'डाउट सॉल्वर')">
                     <div class="card-icon">❓</div>
                     <h3>डाउट सॉल्वर</h3>
                     <p>फोटो खींचें या टाइप करें, AI तुरंत समाधान देगा।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>30%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 30%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>30%</span></div><div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div></div>
                 </div>
-
                 <div class="card" onclick="openFeature('study-planner', 'स्टडी प्लानर')">
                     <div class="card-icon">📅</div>
                     <h3>स्टडी प्लानर</h3>
                     <p>AI द्वारा बनाया गया आपके लिए परफेक्ट टाइमटेबल और रिमाइंडर।</p>
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>प्रगति</span>
-                            <span>90%</span>
-                        </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 90%"></div></div>
-                    </div>
+                    <div class="progress-section"><div class="progress-header"><span>प्रगति</span><span>90%</span></div><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Feature Modal -->
+    <!-- Feature Modal (placeholder) -->
     <div id="featureModal" class="feature-modal">
         <div class="modal-content">
             <div style="font-size: 60px; margin-bottom: 20px;" id="modalIcon">🚀</div>
@@ -742,437 +338,378 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. FIREBASE CONFIGURATION
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCVaemlk94fyisQOD0y7XaR2J8sR7vrosw",
-            authDomain: "ankita-3118d.firebaseapp.com",
-            projectId: "ankita-3118d",
-            storageBucket: "ankita-3118d.firebasestorage.app",
-            messagingSenderId: "20444353775",
-            appId: "1:20444353775:web:e76d8677769a3cb64d771a"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // ==========================================
-        // 2. GLOBAL STATE MANAGEMENT
-        // ==========================================
-        let isGuest = false;
-        let guestTimer = null;
-        let timeLeft = 30 * 60; // 30 minutes
-        let currentUser = null;
-
-        // ==========================================
-        // 3. UI HELPERS
-        // ==========================================
-        function showError(msg) {
-            const errorDiv = document.getElementById('errorMsg');
-            errorDiv.textContent = msg;
-            errorDiv.style.display = 'block';
-            setTimeout(() => errorDiv.style.display = 'none', 5000);
-        }
-
-        function showSuccess(msg) {
-            const successDiv = document.getElementById('successMsg');
-            successDiv.textContent = msg;
-            successDiv.style.display = 'block';
-            setTimeout(() => successDiv.style.display = 'none', 3000);
-        }
-
-        function setLoading(btnId, loading) {
-            const btn = document.getElementById(btnId);
-            if (loading) {
-                btn.classList.add('loading');
-                btn.disabled = true;
-            } else {
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        }
-
-        function toggleForms(showRegister) {
-            if (showRegister) {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.remove('hidden');
-            } else {
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('loginForm').classList.remove('hidden');
-            }
-        }
-
-        // ==========================================
-        // 4. AUTHENTICATION HANDLERS
-        // ==========================================
-        
-        // Google Login
-        document.getElementById('googleBtn').onclick = async () => {
-            setLoading('googleBtn', true);
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch (error) {
-                console.error("Google Login Error:", error);
-                let msg = "लॉगिन विफल: ";
-                if (error.code === 'auth/popup-blocked') msg += "पॉपअप ब्लॉक हो गया। कृपया अनुमति दें।";
-                else if (error.code === 'auth/cancelled-popup-request') msg = ""; // User cancelled
-                else if (error.code === 'auth/unauthorized-domain') {
-                    msg += "यह डोमेन अधिकृत नहीं है। Firebase Console में जोड़ें।";
-                }
-                else msg += error.message;
-                if (msg) showError(msg);
-            } finally {
-                setLoading('googleBtn', false);
-            }
-        };
-
-        // Email Login with Proper Validation
-        document.getElementById('loginBtn').onclick = async () => {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value;
-            
-            // Validation
-            if (!email || !pass) {
-                showError("कृपया ईमेल और पासवर्ड दोनों भरें");
-                return;
-            }
-            if (!email.includes("@") || !email.includes(".")) {
-                showError("सही ईमेल एड्रेस डालें");
-                return;
-            }
-            if (pass.length < 6) {
-                showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
-                return;
-            }
-
-            setLoading('loginBtn', true);
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                showSuccess("सफलतापूर्वक लॉगिन!");
-            } catch (error) {
-                console.error("Login Error:", error);
-                let msg = "";
-                switch(error.code) {
-                    case 'auth/wrong-password':
-                        msg = "❌ गलत पासवर्ड। कृपया फिर से प्रयास करें।";
-                        break;
-                    case 'auth/user-not-found':
-                        msg = "❌ यह ईमेल रजिस्टर्ड नहीं है। कृपया 'नया खाता बनाएं' पर क्लिक करें।";
-                        break;
-                    case 'auth/invalid-email':
-                        msg = "❌ अमान्य ईमेल एड्रेस।";
-                        break;
-                    case 'auth/user-disabled':
-                        msg = "❌ यह खाता निष्क्रिय कर दिया गया है।";
-                        break;
-                    case 'auth/too-many-requests':
-                        msg = "⚠️ बहुत सारे प्रयास। कृपया बाद में कोशिश करें।";
-                        break;
-                    default:
-                        msg = "❌ त्रुटि: " + error.message;
-                }
-                showError(msg);
-            } finally {
-                setLoading('loginBtn', false);
-            }
-        };
-
-        // Registration with Confirm Password
-        document.getElementById('registerBtn').onclick = async () => {
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPassword').value;
-            const confirmPass = document.getElementById('regConfirmPassword').value;
-
-            // Validation
-            if (!name || !email || !pass || !confirmPass) {
-                showError("कृपया सभी फील्ड भरें");
-                return;
-            }
-            if (pass !== confirmPass) {
-                showError("पासवर्ड मेल नहीं खा रहे");
-                return;
-            }
-            if (pass.length < 6) {
-                showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
-                return;
-            }
-
-            setLoading('registerBtn', true);
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                // Update profile with name
-                await userCredential.user.updateProfile({ displayName: name });
-                // Save to Firestore
-                await db.collection('users').doc(userCredential.user.uid).set({
-                    name: name,
-                    email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    isGuest: false
-                });
-                showSuccess("🎉 खाता सफलतापूर्वक बना!");
-            } catch (error) {
-                console.error("Registration Error:", error);
-                let msg = "";
-                switch(error.code) {
-                    case 'auth/email-already-in-use':
-                        msg = "⚠️ यह ईमेल पहले से रजिस्टर्ड है। लॉगिन करें।";
-                        break;
-                    case 'auth/invalid-email':
-                        msg = "❌ अमान्य ईमेल एड्रेस।";
-                        break;
-                    case 'auth/weak-password':
-                        msg = "❌ पासवर्ड बहुत कमजोर है।";
-                        break;
-                    default:
-                        msg = "❌ त्रुटि: " + error.message;
-                }
-                showError(msg);
-            } finally {
-                setLoading('registerBtn', false);
-            }
-        };
-
-        // Toggle Forms
-        document.getElementById('showRegisterBtn').onclick = () => toggleForms(true);
-        document.getElementById('showLoginBtn').onclick = () => toggleForms(false);
-
-        // ==========================================
-        // 5. GUEST MODE MANAGEMENT
-        // ==========================================
-        document.getElementById('guestBtn').onclick = () => {
-            startGuestMode(30 * 60);
-        };
-
-        function startGuestMode(seconds) {
-            isGuest = true;
-            timeLeft = seconds;
-            currentUser = { displayName: 'मेहमान', isGuest: true };
-            
-            // Save to localStorage
-            localStorage.setItem('guestSession', 'true');
-            localStorage.setItem('guestTimeLeft', timeLeft);
-            localStorage.setItem('guestStartTime', Date.now());
-            
-            showDashboard();
-            updateGuestUI();
-            startTimer();
-        }
-
-        function updateGuestUI() {
-            document.getElementById('userNameDisplay').innerText = 'मेहमान';
-            document.getElementById('userAvatar').innerText = '👤';
-            document.getElementById('userAvatar').classList.add('guest-avatar');
-            document.getElementById('guestBadge').classList.remove('hidden');
-            document.getElementById('userStatus').innerText = '🕐 30 मिनट का मुफ्त ट्रायल';
-            document.getElementById('welcomeSubtext').innerText = 'मेहमान मोड - सीमित समय तक सभी फीचर्स एक्सेस करें';
-            document.getElementById('guestTimer').classList.remove('hidden');
-        }
-
-        function startTimer() {
-            updateTimerDisplay();
-            
-            guestTimer = setInterval(() => {
-                timeLeft--;
-                localStorage.setItem('guestTimeLeft', timeLeft);
-                
-                updateTimerDisplay();
-                
-                // Warnings
-                if (timeLeft === 300) { // 5 minutes
-                    document.getElementById('upgradeBanner').classList.add('show');
-                    showSuccess("⚠️ सिर्फ 5 मिनट बचे हैं! लॉगिन करें और अनलिमिटेड पाएं।");
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(guestTimer);
-                    endGuestSession();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            const timerEl = document.getElementById('timeLeft');
-            const timerContainer = document.getElementById('guestTimer');
-            
-            timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            
-            // Visual warnings
-            if (timeLeft < 60) {
-                timerContainer.classList.add('danger');
-                timerContainer.classList.remove('warning');
-            } else if (timeLeft < 300) {
-                timerContainer.classList.add('warning');
-                timerContainer.classList.remove('danger');
-            } else {
-                timerContainer.classList.remove('warning', 'danger');
-            }
-        }
-
-        function endGuestSession() {
-            alert("⏰ समय समाप्त! अनलिमिटेड एक्सेस के लिए लॉगिन करें।");
-            logout();
-        }
-
-        // ==========================================
-        // 6. AUTH STATE OBSERVER (FIXED)
-        // ==========================================
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // Real user logged in
-                isGuest = false;
-                currentUser = user;
-                clearInterval(guestTimer);
-                localStorage.removeItem('guestSession');
-                localStorage.removeItem('guestTimeLeft');
-                localStorage.removeItem('guestStartTime');
-                
-                showDashboard();
-                updateUserUI(user);
-            } else {
-                // No Firebase user
-                if (!isGuest) {
-                    // Not guest either, show auth screen
-                    showAuthScreen();
-                }
-                // If isGuest is true, keep dashboard open (handled separately)
-            }
-        });
-
-        function showDashboard() {
-            document.getElementById('authContainer').classList.add('hidden');
-            document.getElementById('dashboard').classList.add('active');
-        }
-
-        function showAuthScreen() {
-            document.getElementById('dashboard').classList.remove('active');
-            document.getElementById('authContainer').classList.remove('hidden');
-            document.getElementById('guestTimer').classList.add('hidden');
-            document.getElementById('upgradeBanner').classList.remove('show');
-            
-            // Reset forms
-            toggleForms(false);
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        function updateUserUI(user) {
-            const name = user.displayName || user.email.split('@')[0];
-            document.getElementById('userNameDisplay').innerText = name;
-            document.getElementById('userAvatar').innerText = name[0].toUpperCase();
-            document.getElementById('userAvatar').classList.remove('guest-avatar');
-            document.getElementById('guestBadge').classList.add('hidden');
-            document.getElementById('userStatus').innerText = '✅ प्रीमियम सदस्य - अनलिमिटेड एक्सेस';
-            document.getElementById('welcomeSubtext').innerText = 'सभी फीचर्स उपलब्ध हैं। आज क्या सीखेंगे?';
-            document.getElementById('guestTimer').classList.add('hidden');
-        }
-
-        // ==========================================
-        // 7. LOGOUT & CLEANUP
-        // ==========================================
-        function logout() {
-            clearInterval(guestTimer);
-            localStorage.removeItem('guestSession');
-            localStorage.removeItem('guestTimeLeft');
-            localStorage.removeItem('guestStartTime');
-            
-            isGuest = false;
-            currentUser = null;
-            
-            // Reset UI elements
-            document.getElementById('upgradeBanner').classList.remove('show');
-            document.getElementById('guestTimer').classList.remove('warning', 'danger');
-            
-            auth.signOut();
-        }
-
-        document.getElementById('logoutBtn').onclick = logout;
-
-        function switchToLogin() {
-            logout();
-            setTimeout(() => {
-                document.getElementById('email').focus();
-            }, 100);
-        }
-
-        // ==========================================
-        // 8. FEATURE HANDLERS
-        // ==========================================
-        function openFeature(featureId, featureName) {
-            const modal = document.getElementById('featureModal');
-            const icons = {
-                'ai-tutor': '🤖',
-                'smart-notes': '📝',
-                'practice-quiz': '🎯',
-                'progress-report': '📊',
-                'doubt-solver': '❓',
-                'study-planner': '📅'
+        (function() {
+            // ==================== FIREBASE INIT ====================
+            const firebaseConfig = {
+                apiKey: "AIzaSyCVaemlk94fyisQOD0y7XaR2J8sR7vrosw",
+                authDomain: "ankita-3118d.firebaseapp.com",
+                projectId: "ankita-3118d",
+                storageBucket: "ankita-3118d.firebasestorage.app",
+                messagingSenderId: "20444353775",
+                appId: "1:20444353775:web:e76d8677769a3cb64d771a"
             };
-            
-            document.getElementById('modalIcon').innerText = icons[featureId] || '🚀';
-            document.getElementById('modalTitle').innerText = featureName;
-            
-            let desc = "";
-            if (isGuest) {
-                const mins = Math.floor(timeLeft / 60);
-                desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n`;
-                desc += `⏱️ आपके पास ${mins} मिनट बचे हैं (Guest Mode)\n`;
-                desc += `⭐ लॉगिन करें और इसे सबसे पहले इस्तेमाल करें!`;
-            } else {
-                desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n`;
-                desc += `✅ आप प्रीमियम यूजर हैं\n`;
-                desc += `🔔 लॉन्च होते ही आपको नोटिफिकेशन मिलेगी!`;
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            // ==================== GLOBAL STATE ====================
+            let isGuest = false;                // true if guest mode active
+            let guestTimerInterval = null;       // reference to setInterval
+            let timeLeft = 30 * 60;              // 30 minutes in seconds
+            let currentUser = null;               // store Firebase user or guest object
+
+            // DOM elements shortcuts
+            const authContainer = document.getElementById('authContainer');
+            const dashboard = document.getElementById('dashboard');
+            const guestTimerEl = document.getElementById('guestTimer');
+            const timeLeftSpan = document.getElementById('timeLeft');
+            const upgradeBanner = document.getElementById('upgradeBanner');
+            const errorDiv = document.getElementById('errorMsg');
+            const successDiv = document.getElementById('successMsg');
+
+            // ==================== UI HELPERS ====================
+            function showError(msg) {
+                errorDiv.textContent = msg;
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 5000);
             }
-            
-            document.getElementById('modalDesc').innerText = desc;
-            modal.classList.add('active');
-        }
 
-        function closeModal() {
-            document.getElementById('featureModal').classList.remove('active');
-        }
+            function showSuccess(msg) {
+                successDiv.textContent = msg;
+                successDiv.style.display = 'block';
+                setTimeout(() => successDiv.style.display = 'none', 3000);
+            }
 
-        // Close modal on outside click
-        document.getElementById('featureModal').onclick = (e) => {
-            if (e.target.id === 'featureModal') closeModal();
-        };
-
-        // ==========================================
-        // 9. SESSION RECOVERY
-        // ==========================================
-        window.onload = () => {
-            const savedGuest = localStorage.getItem('guestSession');
-            const savedTime = localStorage.getItem('guestTimeLeft');
-            const startTime = localStorage.getItem('guestStartTime');
-            
-            if (savedGuest === 'true' && savedTime && startTime) {
-                // Calculate elapsed time
-                const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-                const remaining = parseInt(savedTime) - elapsed;
-                
-                if (remaining > 0) {
-                    startGuestMode(remaining);
+            function setLoading(btnId, loading) {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                if (loading) {
+                    btn.classList.add('loading');
+                    btn.disabled = true;
                 } else {
-                    // Time expired while away
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            }
+
+            function toggleForms(showRegister) {
+                document.getElementById('loginForm').classList.toggle('hidden', showRegister);
+                document.getElementById('registerForm').classList.toggle('hidden', !showRegister);
+            }
+
+            // ==================== AUTH STATE OBSERVER (fixed) ====================
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // Real Firebase user logged in
+                    // If guest mode was active, kill it
+                    if (isGuest) {
+                        clearGuestSession();
+                    }
+                    isGuest = false;
+                    currentUser = user;
+                    // Remove any leftover guest flags
                     localStorage.removeItem('guestSession');
                     localStorage.removeItem('guestTimeLeft');
                     localStorage.removeItem('guestStartTime');
+                    
+                    showDashboard();
+                    updateUserUI(user);
+                } else {
+                    // No Firebase user – either guest or logged out
+                    if (!isGuest) {
+                        // Not guest either → show auth screen
+                        showAuthScreen();
+                    }
+                    // if isGuest == true, keep dashboard (handled separately)
+                }
+            });
+
+            // ==================== DASHBOARD / AUTH SCREEN ====================
+            function showDashboard() {
+                authContainer.classList.add('hidden');
+                dashboard.classList.add('active');
+            }
+
+            function showAuthScreen() {
+                // Clear any guest remnants if we reach auth screen
+                clearGuestSession(); // ensures timer stopped, flags cleared
+                dashboard.classList.remove('active');
+                authContainer.classList.remove('hidden');
+                guestTimerEl.classList.add('hidden');
+                upgradeBanner.classList.remove('show');
+                toggleForms(false);  // show login form
+                // reset input fields
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+
+            function updateUserUI(user) {
+                const name = user.displayName || (user.email ? user.email.split('@')[0] : 'छात्र');
+                document.getElementById('userNameDisplay').innerText = name;
+                const avatar = document.getElementById('userAvatar');
+                avatar.innerText = name.charAt(0).toUpperCase();
+                avatar.classList.remove('guest-avatar');
+                document.getElementById('guestBadge').classList.add('hidden');
+                document.getElementById('userStatus').innerText = '✅ प्रीमियम सदस्य - अनलिमिटेड एक्सेस';
+                document.getElementById('welcomeSubtext').innerText = 'सभी फीचर्स उपलब्ध हैं। आज क्या सीखेंगे?';
+                guestTimerEl.classList.add('hidden');
+                upgradeBanner.classList.remove('show');
+            }
+
+            function updateGuestUI() {
+                document.getElementById('userNameDisplay').innerText = 'मेहमान';
+                const avatar = document.getElementById('userAvatar');
+                avatar.innerText = '👤';
+                avatar.classList.add('guest-avatar');
+                document.getElementById('guestBadge').classList.remove('hidden');
+                document.getElementById('userStatus').innerText = '🕐 30 मिनट का मुफ्त ट्रायल';
+                document.getElementById('welcomeSubtext').innerText = 'मेहमान मोड - सीमित समय तक सभी फीचर्स एक्सेस करें';
+                guestTimerEl.classList.remove('hidden');
+                // banner might appear later via timer
+            }
+
+            // ==================== GUEST MODE ====================
+            function clearGuestSession() {
+                if (guestTimerInterval) {
+                    clearInterval(guestTimerInterval);
+                    guestTimerInterval = null;
+                }
+                isGuest = false;
+                timeLeft = 30 * 60;
+                localStorage.removeItem('guestSession');
+                localStorage.removeItem('guestTimeLeft');
+                localStorage.removeItem('guestStartTime');
+                // also hide timer and banner
+                guestTimerEl.classList.add('hidden');
+                guestTimerEl.classList.remove('warning','danger');
+                upgradeBanner.classList.remove('show');
+            }
+
+            function startGuestMode(initialSeconds) {
+                // clear any previous guest timer
+                clearGuestSession(); 
+                
+                isGuest = true;
+                timeLeft = initialSeconds;
+                currentUser = { displayName: 'मेहमान', isGuest: true };
+                
+                // store in localStorage
+                localStorage.setItem('guestSession', 'true');
+                localStorage.setItem('guestTimeLeft', timeLeft);
+                localStorage.setItem('guestStartTime', Date.now());
+                
+                showDashboard();
+                updateGuestUI();
+                startGuestTimer();
+            }
+
+            function startGuestTimer() {
+                updateTimerDisplay(); // immediate
+
+                guestTimerInterval = setInterval(() => {
+                    timeLeft--;
+                    // update localStorage periodically
+                    localStorage.setItem('guestTimeLeft', timeLeft);
+                    
+                    updateTimerDisplay();
+
+                    // warnings
+                    if (timeLeft === 300) { // 5 minutes
+                        upgradeBanner.classList.add('show');
+                        showSuccess("⚠️ सिर्फ 5 मिनट बचे हैं! लॉगिन करें और अनलिमिटेड पाएं।");
+                    }
+                    if (timeLeft === 60) {
+                        showError("⏰ केवल 1 मिनट शेष! समय समाप्त होने पर सत्र समाप्त हो जाएगा।");
+                    }
+                    if (timeLeft <= 0) {
+                        clearInterval(guestTimerInterval);
+                        guestTimerInterval = null;
+                        endGuestSession();
+                    }
+                }, 1000);
+            }
+
+            function updateTimerDisplay() {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timeLeftSpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                
+                const timerContainer = guestTimerEl;
+                if (timeLeft < 60) {
+                    timerContainer.classList.add('danger');
+                    timerContainer.classList.remove('warning');
+                } else if (timeLeft < 300) {
+                    timerContainer.classList.add('warning');
+                    timerContainer.classList.remove('danger');
+                } else {
+                    timerContainer.classList.remove('warning','danger');
                 }
             }
-        };
 
-        // Handle back button on mobile
-        window.onbeforeunload = () => {
-            if (isGuest && timeLeft > 0) {
-                localStorage.setItem('guestTimeLeft', timeLeft);
+            function endGuestSession() {
+                alert("⏰ समय समाप्त! अनलिमिटेड एक्सेस के लिए लॉगिन करें।");
+                logout(); // this will clear everything and go to auth screen
             }
-        };
+
+            // ==================== AUTH ACTIONS ====================
+            document.getElementById('googleBtn').onclick = async () => {
+                setLoading('googleBtn', true);
+                const provider = new firebase.auth.GoogleAuthProvider();
+                try {
+                    await auth.signInWithPopup(provider);
+                } catch (error) {
+                    console.error("Google Login Error:", error);
+                    let msg = "लॉगिन विफल: ";
+                    if (error.code === 'auth/popup-blocked') msg += "पॉपअप ब्लॉक हो गया। कृपया अनुमति दें।";
+                    else if (error.code === 'auth/unauthorized-domain') msg += "यह डोमेन अधिकृत नहीं है। Firebase Console में जोड़ें।";
+                    else msg += error.message;
+                    showError(msg);
+                } finally {
+                    setLoading('googleBtn', false);
+                }
+            };
+
+            document.getElementById('loginBtn').onclick = async () => {
+                const email = document.getElementById('email').value.trim();
+                const pass = document.getElementById('password').value;
+                
+                if (!email || !pass) return showError("कृपया ईमेल और पासवर्ड दोनों भरें");
+                if (!email.includes("@") || !email.includes(".")) return showError("सही ईमेल एड्रेस डालें");
+                if (pass.length < 6) return showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
+
+                setLoading('loginBtn', true);
+                try {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    showSuccess("सफलतापूर्वक लॉगिन!");
+                } catch (error) {
+                    let msg = "";
+                    switch(error.code) {
+                        case 'auth/wrong-password': msg = "❌ गलत पासवर्ड।"; break;
+                        case 'auth/user-not-found': msg = "❌ यह ईमेल रजिस्टर्ड नहीं है। 'नया खाता बनाएं' पर क्लिक करें।"; break;
+                        case 'auth/invalid-email': msg = "❌ अमान्य ईमेल।"; break;
+                        case 'auth/too-many-requests': msg = "⚠️ बहुत सारे प्रयास, बाद में प्रयास करें।"; break;
+                        default: msg = "❌ त्रुटि: " + error.message;
+                    }
+                    showError(msg);
+                } finally {
+                    setLoading('loginBtn', false);
+                }
+            };
+
+            document.getElementById('registerBtn').onclick = async () => {
+                const name = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const pass = document.getElementById('regPassword').value;
+                const confirmPass = document.getElementById('regConfirmPassword').value;
+
+                if (!name || !email || !pass || !confirmPass) return showError("सभी फील्ड भरें");
+                if (pass !== confirmPass) return showError("पासवर्ड मेल नहीं खा रहे");
+                if (pass.length < 6) return showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
+
+                setLoading('registerBtn', true);
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+                    await userCredential.user.updateProfile({ displayName: name });
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), isGuest: false
+                    });
+                    showSuccess("🎉 खाता सफलतापूर्वक बना!");
+                } catch (error) {
+                    let msg = "";
+                    switch(error.code) {
+                        case 'auth/email-already-in-use': msg = "⚠️ यह ईमेल पहले से रजिस्टर्ड है। लॉगिन करें।"; break;
+                        case 'auth/invalid-email': msg = "❌ अमान्य ईमेल।"; break;
+                        case 'auth/weak-password': msg = "❌ पासवर्ड बहुत कमजोर।"; break;
+                        default: msg = "❌ त्रुटि: " + error.message;
+                    }
+                    showError(msg);
+                } finally {
+                    setLoading('registerBtn', false);
+                }
+            };
+
+            document.getElementById('guestBtn').onclick = () => {
+                startGuestMode(30 * 60);
+            };
+
+            // toggle forms
+            document.getElementById('showRegisterBtn').onclick = () => toggleForms(true);
+            document.getElementById('showLoginBtn').onclick = () => toggleForms(false);
+
+            // logout function (global)
+            window.logout = function() {
+                clearGuestSession(); // kills guest timer & flags
+                isGuest = false;
+                currentUser = null;
+                auth.signOut().then(() => {
+                    // auth observer will show auth screen
+                }).catch((e) => {
+                    showError("लॉगआउट में समस्या: " + e.message);
+                    showAuthScreen(); // fallback
+                });
+            };
+            document.getElementById('logoutBtn').onclick = logout;
+
+            // switch to login (used by upgrade banner)
+            window.switchToLogin = function() {
+                logout();
+                setTimeout(() => document.getElementById('email').focus(), 200);
+            };
+
+            // ==================== FEATURE MODAL ====================
+            window.openFeature = function(featureId, featureName) {
+                const modal = document.getElementById('featureModal');
+                const icons = { 'ai-tutor':'🤖','smart-notes':'📝','practice-quiz':'🎯','progress-report':'📊','doubt-solver':'❓','study-planner':'📅' };
+                document.getElementById('modalIcon').innerText = icons[featureId] || '🚀';
+                document.getElementById('modalTitle').innerText = featureName;
+                
+                let desc;
+                if (isGuest) {
+                    const mins = Math.floor(timeLeft / 60);
+                    desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n⏱️ आपके पास ${mins} मिनट बचे हैं (Guest Mode)\n⭐ लॉगिन करें और इसे सबसे पहले इस्तेमाल करें!`;
+                } else {
+                    desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n✅ आप प्रीमियम यूजर हैं\n🔔 लॉन्च होते ही नोटिफिकेशन मिलेगी!`;
+                }
+                document.getElementById('modalDesc').innerText = desc;
+                modal.classList.add('active');
+            };
+
+            window.closeModal = function() {
+                document.getElementById('featureModal').classList.remove('active');
+            };
+            document.getElementById('featureModal').onclick = (e) => { if (e.target.id === 'featureModal') closeModal(); };
+
+            // ==================== SESSION RECOVERY (on load) ====================
+            window.addEventListener('load', () => {
+                const savedGuest = localStorage.getItem('guestSession');
+                const savedTime = localStorage.getItem('guestTimeLeft');
+                const startTime = localStorage.getItem('guestStartTime');
+                
+                if (savedGuest === 'true' && savedTime && startTime) {
+                    const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                    const remaining = parseInt(savedTime) - elapsed;
+                    if (remaining > 0) {
+                        // avoid re-triggering auth observer conflict: set isGuest true before starting
+                        isGuest = true; // mark so that onAuthStateChanged doesn't hide dashboard
+                        startGuestMode(remaining);
+                    } else {
+                        // expired while away
+                        localStorage.removeItem('guestSession');
+                        localStorage.removeItem('guestTimeLeft');
+                        localStorage.removeItem('guestStartTime');
+                    }
+                }
+            });
+
+            // Before unload, save current time for guest
+            window.addEventListener('beforeunload', () => {
+                if (isGuest && timeLeft > 0) {
+                    localStorage.setItem('guestTimeLeft', timeLeft);
+                    localStorage.setItem('guestStartTime', Date.now());
+                }
+            });
+
+        })();
     </script>
 </body>
 </html>
