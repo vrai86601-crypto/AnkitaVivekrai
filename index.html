@@ -3,174 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek AI · Advanced Learning Platform</title>
+    <title>Vivek AI · Professional Core</title>
     <style>
-        :root {
-            --primary: #ff3333; /* विवेक का पसंदीदा लाल रंग */
-            --bg: #0a0c10;
-            --card: #161b22;
-            --text-main: #e6edf3;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; }
-
-        /* Navigation Style Landing Header */
-        nav { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; background: rgba(10, 12, 16, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-
-        /* Hero Section */
-        .hero { text-align: center; margin-bottom: 50px; }
-        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
-        .hero p { color: #8b949e; font-size: 1.1rem; }
-
-        /* Dashboard Grid */
-        .dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-
-        .main-panel, .side-panel { background: var(--card); border: 1px solid #30363d; border-radius: 16px; padding: 24px; }
-
-        /* Input Styles */
-        select, textarea { width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px; color: white; margin-bottom: 20px; font-size: 1rem; }
-        textarea { min-height: 150px; resize: none; border-left: 4px solid var(--primary); }
-
-        .btn-launch { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; }
-        .btn-launch:hover { background: #cc0000; transform: translateY(-2px); }
-
-        /* Evolution Tracker (The Professional Way) */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .stat-card { background: #0d1117; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #30363d; }
-        .stat-val { display: block; font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-
-        /* Response Interface */
-        .output-area { margin-top: 30px; background: #0d1117; border-radius: 12px; padding: 20px; display: none; border: 1px solid #30363d; }
-        .output-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--primary); font-weight: bold; }
+        :root { --primary: #ff3333; --bg: #0a0c10; --card: #161b22; --text: #e6edf3; --error: #ff4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); }
+        nav { padding: 15px 5%; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; background: rgba(10, 12, 16, 0.9); }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .panel { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
+        textarea, select { width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 12px; color: white; margin-bottom: 15px; }
+        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Model Logic (Hidden Concept) */
-        .logic-tag { font-size: 0.7rem; color: #444; text-transform: uppercase; letter-spacing: 1px; }
-
-        @media (max-width: 768px) { .dashboard { grid-template-columns: 1fr; } }
+        /* Error Logging Style */
+        .error-log { background: #2a1111; border: 1px solid var(--error); color: var(--error); padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-family: monospace; font-size: 0.85rem; }
+        .output-area { margin-top: 20px; background: #0d1117; padding: 20px; border-radius: 8px; border: 1px solid #333; display: none; }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">VIVEK AI CORE</div>
-    <div class="logic-tag">Powered by DeepSeek-R1 & Cogito</div>
+    <div style="font-weight: 800; font-size: 1.2rem;">VIVEK AI CORE</div>
+    <div><span id="status-dot" class="status-dot" style="background: #555;"></span> <span id="status-text" style="font-size: 0.8rem;">OFFLINE</span></div>
 </nav>
 
 <div class="container">
-    <div class="hero">
-        <h1>Advanced Learning Portal</h1>
-        <p>A to Z शिक्षा समाधान: School, University, and Competitive Exams.</p>
-    </div>
-
     <div class="dashboard">
-        <div class="main-panel">
+        <div class="panel">
             <select id="edu-level">
-                <option value="School">School Level (KG-12)</option>
-                <option value="University">University (Shivaji College/DU)</option>
+                <option value="School">School (KG-12)</option>
+                <option value="University">University (Shivaji/DU)</option>
                 <option value="NTPC">Railway NTPC / Govt Exams</option>
-                <option value="Tech">Coding & Web Development</option>
             </select>
+            <textarea id="user-input" placeholder="Magnetism, Calculus या NTPC GK यहाँ पूछें..."></textarea>
+            <button id="action-btn" class="btn" onclick="generateResponse()">ANALYZE DATA</button>
 
-            <textarea id="user-query" placeholder="सिखने के लिए अपना टॉपिक यहाँ दर्ज करें..."></textarea>
-            
-            <button class="btn-launch" onclick="processKnowledge()" id="action-btn">Analyze & Generate Knowledge</button>
+            <div id="error-display" class="error-log"></div>
 
             <div id="response-box" class="output-area">
-                <div class="output-header">📂 Generated Insight:</div>
-                <div id="main-output" style="white-space: pre-wrap;"></div>
+                <div style="color: var(--primary); font-weight: bold; margin-bottom: 10px;">GENERATED INSIGHT:</div>
+                <div id="text-out" style="white-space: pre-wrap;"></div>
             </div>
         </div>
 
-        <div class="side-panel">
-            <h3 style="margin-bottom: 20px;">System Status</h3>
-            <div id="avatar-display" style="font-size: 3rem; text-align: center; margin-bottom: 10px;">👶</div>
-            <div style="text-align: center; font-weight: bold; margin-bottom: 20px;" id="current-rank">RANK: NEW BORN</div>
-
-            <div class="stat-card">
-                <span class="stat-val" id="topic-count">0</span>
+        <div class="panel" style="text-align: center;">
+            <div id="avatar" style="font-size: 3.5rem;">👶</div>
+            <h3 id="rank-text" style="margin: 10px 0;">RANK: NEW BORN</h3>
+            <div style="background: #0d1117; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="brain-count">0</div>
                 <small>Topics Mastered</small>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-card"><small>Accuracy</small><br><b>99.2%</b></div>
-                <div class="stat-card"><small>Logic</small><br><b>DeepSeek</b></div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <h4 style="font-size: 0.9rem; color: #8b949e; margin-bottom: 10px;">RECENT ACTIVITY</h4>
-                <div id="history-log" style="font-size: 0.85rem; color: #6e7681;">नया सेशन शुरू करें...</div>
+            <div style="margin-top: 20px; text-align: left; font-size: 0.8rem; color: #888;">
+                <b>LOGIC:</b> DeepSeek-R1<br>
+                <b>CONTEXT:</b> Cogito V2.1
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const KEY = "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";
+    const API_KEY = "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";
 
-    function updateDashboard() {
-        const brain = JSON.parse(localStorage.getItem('v_core_brain') || '[]');
-        const count = brain.length;
-        document.getElementById('topic-count').innerText = count;
-
-        let rank = 'NEW BORN', avatar = '👶';
-        if(count >= 30) { rank = 'PROFESSOR'; avatar = '👨‍🏫'; }
-        else if(count >= 15) { rank = 'SENIOR STUDENT'; avatar = '🧑‍🎓'; }
-        else if(count >= 5) { rank = 'JUNIOR ANALYST'; avatar = '👦'; }
-
-        document.getElementById('current-rank').innerText = `RANK: ${rank}`;
-        document.getElementById('avatar-display').innerText = avatar;
+    function updateUI() {
+        const brain = JSON.parse(localStorage.getItem('v_core_v1') || '[]');
+        document.getElementById('brain-count').innerText = brain.length;
         
-        if(count > 0) {
-            document.getElementById('history-log').innerText = brain.slice(-3).reverse().join(' | ');
-        }
+        let rank = 'NEW BORN', icon = '👶';
+        if(brain.length >= 30) { rank = 'PROFESSOR'; icon = '👨‍🏫'; }
+        else if(brain.length >= 15) { rank = 'SENIOR STUDENT'; icon = '🧑‍🎓'; }
+        else if(brain.length >= 5) { rank = 'JUNIOR ANALYST'; icon = '👦'; }
+        
+        document.getElementById('rank-text').innerText = `RANK: ${rank}`;
+        document.getElementById('avatar').innerText = icon;
     }
 
-    async function processKnowledge() {
-        const input = document.getElementById('user-query').value.trim();
-        const level = document.getElementById('edu-level').value;
+    async function generateResponse() {
+        const input = document.getElementById('user-input').value.trim();
         const btn = document.getElementById('action-btn');
-        const output = document.getElementById('main-output');
+        const errBox = document.getElementById('error-display');
+        const outBox = document.getElementById('response-box');
+        const statusDot = document.getElementById('status-dot');
 
-        if(!input) return alert("कृपया टॉपिक लिखें!");
+        if(!input) return alert("टॉपिक लिखें!");
 
+        // Reset UI
+        errBox.style.display = 'none';
+        outBox.style.display = 'none';
         btn.disabled = true;
-        btn.innerText = "Analyzing Context...";
-        document.getElementById('response-box').style.display = 'block';
-        output.innerText = "Processing through Multi-Agent Logic...";
+        btn.innerText = "CONNECTING TO AI NODES...";
+        statusDot.style.background = "#ffd700";
 
         try {
             const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${KEY}`, "Content-Type": "application/json" },
+                headers: { 
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": window.location.href 
+                },
                 body: JSON.stringify({
                     "model": "google/gemini-2.0-flash-exp:free",
-                    "messages": [
-                        { "role": "system", "content": `You are an Advanced AI Tutor. Use DeepSeek-style logic and Cogito-style context. Topic: ${input}, Level: ${level}. Respond in Hinglish. Focus on clarity and examination points.` },
-                        { "role": "user", "content": input }
-                    ]
+                    "messages": [{ "role": "user", "content": input }]
                 })
             });
 
             const data = await res.json();
-            const result = data.choices[0].message.content;
-            output.innerText = result;
 
-            let brain = JSON.parse(localStorage.getItem('v_core_brain') || '[]');
+            if (!res.ok) {
+                // यह असली एरर दिखाएगा
+                throw new Error(`API ERROR ${res.status}: ${data.error?.message || "Unknown issue"}`);
+            }
+
+            document.getElementById('text-out').innerText = data.choices[0].message.content;
+            outBox.style.display = 'block';
+            statusDot.style.background = "#00ff00";
+
+            let brain = JSON.parse(localStorage.getItem('v_core_v1') || '[]');
             brain.push(input);
-            localStorage.setItem('v_core_brain', JSON.stringify(brain));
-            updateDashboard();
+            localStorage.setItem('v_core_v1', JSON.stringify(brain));
+            updateUI();
 
         } catch (err) {
-            output.innerText = "System Error: Please check API connectivity.";
+            statusDot.style.background = "#ff0000";
+            errBox.style.display = 'block';
+            errBox.innerHTML = `⚠️ <b>SYSTEM ERROR DETECTED:</b><br>${err.message}`;
         } finally {
             btn.disabled = false;
-            btn.innerText = "Analyze & Generate Knowledge";
+            btn.innerText = "ANALYZE DATA";
         }
     }
-    window.onload = updateDashboard;
+    window.onload = updateUI;
 </script>
 </body>
 </html>
