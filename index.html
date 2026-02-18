@@ -3,133 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Portal — विवेक राय</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+    <title>Vivek Study Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables & Theme */
-        :root { 
-            --primary: #e31e24; /* आपका पसंदीदा लाल रंग */
-            --dark: #0b0b0b; /* आपका पसंदीदा काला रंग */
-            --accent: #00d4ff; 
-            --card-bg: rgba(255,255,255,0.05);
-        }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; } /* user-select: none कॉपी रोकता है */
-        
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%); 
-            color: white; 
-            min-height: 100vh;
+        /* विवेक की पसंदीदा Black & Red थीम */
+        :root {
+            --bg: #000000;
+            --card-bg: #121212;
+            --primary: #ff0000;
+            --text: #ffffff;
+            --gray: #888888;
         }
 
-        /* Watermark */
-        .watermark {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            opacity: 0.3;
-            font-size: 12px;
-            z-index: 1000;
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Main Layout */
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; animation: fadeIn 0.8s ease; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #333; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
-        
-        .card { 
-            background: var(--card-bg); 
-            padding: 25px; 
-            border-radius: 15px; 
-            border: 1px solid #333; 
-            transition: 0.3s; 
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
         }
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(255,255,255,0.08); }
 
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:active { transform: scale(0.98); }
+
+        .note-item {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--primary);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="watermark">Developed by Vivek Rai (Shivaji College)</div>
-
     <div class="container">
         <header>
-            <h1>🎓 AI Study Portal</h1>
-            <div id="userInfo">
-                <button class="btn" onclick="logout()">लॉगआउट</button>
-            </div>
+            <h1>VIVEK STUDY PORTAL</h1>
+            <p id="welcome-msg" style="color: var(--gray);">नमस्ते! अपनी पढ़ाई का हिसाब रखें।</p>
         </header>
 
-        <section class="welcome-text">
-            <h2 style="margin-top: 20px;">नमस्ते विवेक, आज की <span style="color: var(--accent);">NTPC</span> तैयारी कैसी है?</h2>
-        </section>
-
-        <div class="grid">
-            <div class="card" onclick="openAI()">
-                <h3>🤖 AI ट्यूटर</h3>
-                <p>गणित और अन्य विषयों के जटिल सवालों को समझें।</p>
-            </div>
-
-            <div class="card" onclick="solveDoubt()">
-                <h3>❓ डाउट सॉल्वर</h3>
-                <p>सवाल की फोटो अपलोड करें और तुरंत समाधान पाएं।</p>
-            </div>
-
-            <div class="card" onclick="viewPlanner()">
-                <h3>📅 स्टडी प्लानर</h3>
-                <p>अपने सेमेस्टर और एग्जाम के लिए टाइमटेबल बनाएं।</p>
-            </div>
+        <div id="login-section" class="card">
+            <h3>अपना नाम लिखें</h3>
+            <input type="text" id="user-name" placeholder="आपका नाम...">
+            <button onclick="startApp()">शुरू करें</button>
         </div>
+
+        <div id="main-section" style="display: none;">
+            <div class="card">
+                <h3>📝 नए नोट्स / सवाल</h3>
+                <input type="text" id="note-title" placeholder="विषय (जैसे: NTPC Maths)">
+                <textarea id="note-text" rows="4" placeholder="यहाँ विस्तार से लिखें..."></textarea>
+                <button onclick="addNote()">सेव करें</button>
+            </div>
+
+            <h3 style="margin-left: 10px; color: var(--primary);">📂 आपके सेव किए गए नोट्स</h3>
+            <div id="notes-display"></div>
+
+            <button onclick="logout()" style="background: transparent; border: 1px solid var(--gray); color: var(--gray); margin-top: 20px; font-size: 12px;">अकाउंट बदलें / डेटा साफ़ करें</button>
+        </div>
+
+        <footer>
+            Developed by Vivek Rai <br> Shivaji College (Maths Dept)
+        </footer>
     </div>
 
     <script>
-        // 1. सुरक्षा कोड: राइट क्लिक और कॉपी रोकना
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 73)) {
-                alert("विवेक: सुरक्षा कारणों से कॉपी करना मना है!");
-                return false;
+        // Logic for Data Management
+        window.onload = () => {
+            const savedName = localStorage.getItem('v_user');
+            if (savedName) {
+                renderDashboard(savedName);
             }
         };
 
-        // 2. Firebase Configuration (आपके डेटा से)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCVaemlk94fyisQOD0y7XaR2J8sR7vrosw",
-            authDomain: "ankita-3118d.firebaseapp.com",
-            projectId: "ankita-3118d",
-            storageBucket: "ankita-3118d.firebasestorage.app",
-            messagingSenderId: "20444353775",
-            appId: "1:20444353775:web:e76d8677769a3cb64d771a"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-        // 3. Functions
-        function openAI() {
-            alert("AI ट्यूटर सक्रिय हो रहा है... (Backend integration needed)");
+        function startApp() {
+            const name = document.getElementById('user-name').value.trim();
+            if (name === "") return alert("कृपया अपना नाम लिखें!");
+            localStorage.setItem('v_user', name);
+            renderDashboard(name);
         }
 
-        function solveDoubt() {
-            alert("कैमरा एक्सेस किया जा रहा है... (OCR logic processing)");
+        function renderDashboard(name) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('main-section').style.display = 'block';
+            document.getElementById('welcome-msg').innerText = `नमस्ते, ${name}!`;
+            displayNotes();
+        }
+
+        function addNote() {
+            const title = document.getElementById('note-title').value.trim();
+            const text = document.getElementById('note-text').value.trim();
+            
+            if (!title || !text) return alert("दोनों खाली न छोड़ें!");
+
+            let notes = JSON.parse(localStorage.getItem('v_data') || "[]");
+            notes.unshift({
+                title: title,
+                body: text,
+                time: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem('v_data', JSON.stringify(notes));
+            
+            // Clear inputs
+            document.getElementById('note-title').value = "";
+            document.getElementById('note-text').value = "";
+            
+            displayNotes();
+        }
+
+        function displayNotes() {
+            const notes = JSON.parse(localStorage.getItem('v_data') || "[]");
+            const display = document.getElementById('notes-display');
+            
+            if (notes.length === 0) {
+                display.innerHTML = "<p style='text-align:center; opacity:0.5;'>कोई नोट्स नहीं मिले।</p>";
+                return;
+            }
+
+            display.innerHTML = notes.map(n => `
+                <div class="note-item">
+                    <div class="note-header">
+                        <span>${n.time}</span>
+                    </div>
+                    <strong style="display:block; margin-bottom:5px; font-size:1.1rem;">${n.title}</strong>
+                    <p style="margin:0; font-size:0.9rem; color:#ccc; line-height:1.4;">${n.body}</p>
+                </div>
+            `).join("");
         }
 
         function logout() {
-            firebase.auth().signOut().then(() => {
-                window.location.reload();
-            });
+            if (confirm("क्या आप सारा डेटा हटाना चाहते हैं?")) {
+                localStorage.clear();
+                location.reload();
+            }
         }
     </script>
 </body>
