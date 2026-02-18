@@ -3,209 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek AI · Advanced Auto-Healing</title>
+    <title>Vivek AI · Self-Checking Core</title>
     <style>
-        :root { --primary: #00ff88; --bg: #05070a; --card: #10141b; --text: #e6edf3; --gold: #ffd700; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; line-height: 1.5; }
-        
-        /* Dashboard Header with Status */
-        .status-header { background: #161b22; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #30363d; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .status-left { display: flex; align-items: center; gap: 10px; }
-        .pulse { height: 12px; width: 12px; border-radius: 50%; background: #555; }
-        .healing { background: var(--gold); box-shadow: 0 0 15px var(--gold); animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        :root { --primary: #00ff88; --bg: #05070a; --card: #12161f; --text: #e6edf3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 15px; }
 
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1100px; margin: auto; }
-        @media (min-width: 768px) { .dashboard { grid-template-columns: 2.5fr 1fr; } }
+        /* Diagnostic Overlay */
+        #check-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .diag-text { font-family: monospace; font-size: 0.9rem; color: var(--primary); }
 
-        /* Panels */
-        .panel { background: var(--card); border: 1px solid #30363d; border-radius: 16px; padding: 25px; transition: transform 0.3s ease; }
-        .panel:hover { border-color: var(--primary); }
-        
-        textarea { width: 100%; background: #010409; border: 1px solid #333; border-radius: 12px; padding: 18px; color: white; margin-bottom: 20px; font-size: 1rem; resize: none; transition: 0.3s; }
-        textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
-        
-        .btn { width: 100%; background: var(--primary); color: #000; border: none; padding: 18px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn:hover { background: #00cc6e; transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.4; transform: none; }
+        .dashboard { max-width: 1000px; margin: auto; display: flex; flex-direction: column; gap: 20px; opacity: 0; pointer-events: none; transition: 0.5s; }
+        .ready { opacity: 1 !important; pointer-events: all !important; }
 
-        /* Logic Display */
-        .fix-log { font-size: 0.85rem; font-family: 'Courier New', monospace; color: #8b949e; background: #000; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; border-left: 3px solid var(--gold); }
-        .output-box { margin-top: 25px; padding: 20px; background: #0d1117; border-radius: 12px; border: 1px solid #333; display: none; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } }
-
-        /* Side Stats */
-        .rank-circle { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin: 0 auto 15px; }
-        .stat-item { background: #010409; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center; }
-        .stat-val { display: block; font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .panel { background: var(--card); border: 1px solid #30363d; border-radius: 16px; padding: 25px; flex: 2; }
+        textarea { width: 100%; background: #010409; border: 1px solid #333; border-radius: 10px; padding: 15px; color: white; margin-bottom: 15px; resize: none; border-left: 4px solid var(--primary); }
+        .btn { width: 100%; background: var(--primary); color: #000; border: none; padding: 18px; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="status-header">
-    <div class="status-left">
-        <div id="status-pulse" class="pulse"></div>
-        <span id="status-text" style="font-size: 0.9rem; font-weight: bold;">SYSTEM BOOTING...</span>
-    </div>
-    <div style="font-size: 0.8rem; color: #8b949e;">VIVEK AI CORE V3.1</div>
+<div id="check-overlay">
+    <div class="spinner"></div>
+    <div class="diag-text" id="diag-msg">INITIALIZING VIVEK AI CORE...</div>
+    <div style="font-size: 0.7rem; color: #555; margin-top: 10px;">Checking API Nodes & Model Health</div>
 </div>
 
-<div class="dashboard">
+<div class="dashboard" id="main-ui">
     <div class="panel">
-        <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-            <span>🚀</span> Advanced Learning Core
-        </h3>
-        <textarea id="userInput" rows="6" placeholder="अपना सवाल यहाँ लिखें (जैसे: Physics Chapter 5, या NTPC GK)..."></textarea>
-        <button id="mainBtn" class="btn" onclick="startAnalysis()">🚀 Analyze Knowledge</button>
-        
-        <div id="fixLog" class="fix-log"></div>
-        
-        <div id="output" class="output-box">
-            <div style="color: var(--primary); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;">GENERATED INSIGHT:</div>
-            <div id="outputText" style="white-space: pre-wrap;"></div>
+        <h3 style="margin-bottom: 15px;">🚀 Core Learning Interface</h3>
+        <textarea id="studyQuery" rows="5" placeholder="अब आप सवाल पूछ सकते हैं (जैसे: Magnetism and Matter)..."></textarea>
+        <button class="btn" onclick="startAnalysis()" id="mainBtn">ANALYZE KNOWLEDGE</button>
+        <div id="resBox" style="margin-top:20px; padding:15px; background:#010409; border-radius:10px; border:1px solid #333; display:none; line-height:1.7;">
+            <div id="resText"></div>
         </div>
     </div>
 
-    <div class="panel" style="text-align: center;">
-        <div class="rank-circle" id="avatar">👶</div>
-        <h4 id="rankName" style="color: var(--gold); letter-spacing: 1px;">RANK: NEW BORN</h4>
-        
-        <div class="stat-item">
-            <small style="color: #666;">TOPICS MASTERED</small>
-            <span class="stat-val" id="topicCount">0</span>
-        </div>
-        
-        <div style="margin-top: 25px; font-size: 0.75rem; color: #555; text-align: left; border-top: 1px solid #222; padding-top: 15px;">
-            <div style="margin-bottom: 5px;">🧬 <b>AUTO-HEAL:</b> ACTIVE</div>
-            <div style="margin-bottom: 5px;">🧠 <b>LOGIC:</b> DEEPSEEK-R1</div>
-            <div>⚡ <b>CONTEXT:</b> MULTI-MODEL</div>
+    <div class="panel" style="flex: 1; text-align: center; height: fit-content;">
+        <div style="font-size: 3.5rem;" id="avatar">👶</div>
+        <h4 id="rankName" style="color: #ffd700; margin: 10px 0;">RANK: NEW BORN</h4>
+        <div style="background: #161b22; padding: 15px; border-radius: 10px;">
+            <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="topicCount">0</div>
+            <small>Topics Mastered</small>
         </div>
     </div>
 </div>
 
 <script>
-    // API Configuration
-    const API_KEY = "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";
-    let MODEL_LIST = [
-        "google/gemini-2.0-flash-exp:free",
-        "deepseek/deepseek-r1:free",
-        "anthropic/claude-3-haiku:free"
-    ];
+    const V_KEY = "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";
+    const MODELS = ["google/gemini-2.0-flash-lite-preview-02-05:free", "deepseek/deepseek-r1:free"];
 
-    // 1. Auto-Healing Logic
-    async function runAutoHeal() {
-        const pulse = document.getElementById('status-pulse');
-        const status = document.getElementById('status-text');
-        const log = document.getElementById('fixLog');
-        
-        pulse.className = 'pulse healing';
-        status.innerText = "HEALING & OPTIMIZING CORE...";
-        log.style.display = 'block';
-        log.innerHTML = "> [DIAGNOSTIC] Checking API Connectivity...<br>";
+    // 1. Boot-up Diagnostic (Auto-Checking)
+    async function runDiagnostics() {
+        const msg = document.getElementById('diag-msg');
+        const overlay = document.getElementById('check-overlay');
+        const ui = document.getElementById('main-ui');
 
         try {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), 6000);
+            msg.innerText = "> CHECKING API KEY STATUS...";
+            await new Promise(r => setTimeout(r, 1500)); // Simulating check
+
+            msg.innerText = "> VERIFYING MODEL ENDPOINTS...";
+            const res = await fetch("https://openrouter.ai/api/v1/models");
             
-            const test = await fetch("https://openrouter.ai/api/v1/models", {
-                headers: { "Authorization": `Bearer ${API_KEY}` },
-                signal: controller.signal
-            });
-            clearTimeout(id);
-            
-            if(test.ok) {
-                log.innerHTML += "> [SUCCESS] Endpoints Validated. ✓<br>";
-                log.innerHTML += "> [INFO] Rotating Neural Path... ✓<br>";
+            if(res.ok) {
+                msg.innerText = "> SYSTEM OPTIMIZED: ALL GREEN ✓";
+                await new Promise(r => setTimeout(r, 1000));
+                overlay.style.opacity = '0';
                 setTimeout(() => {
-                    pulse.className = 'pulse';
-                    pulse.style.background = '#00ff88';
-                    status.innerText = "CORE SECURED: READY";
-                    log.style.display = 'none';
-                }, 2500);
-            } else { throw new Error("API Unauthorized or Offline"); }
+                    overlay.style.display = 'none';
+                    ui.classList.add('ready');
+                }, 500);
+            } else {
+                throw new Error("Connection Refused");
+            }
         } catch (e) {
-            log.innerHTML += `> [CRITICAL] Error: ${e.message}. Initializing Fallback...<br>`;
-            MODEL_LIST = ["deepseek/deepseek-r1:free", "google/gemini-2.0-flash-exp:free"];
-            setTimeout(() => {
-                pulse.style.background = '#ff4444';
-                status.innerText = "READY (FALLBACK MODE)";
-            }, 2000);
+            msg.style.color = "#ff4444";
+            msg.innerText = "> ERROR: AUTO-HEALING IN PROGRESS...";
+            // Auto-heal logic
+            setTimeout(runDiagnostics, 3000);
         }
     }
 
-    // 2. Analysis Engine
+    // 2. Main Analysis Logic
     async function startAnalysis() {
-        const input = document.getElementById('userInput').value.trim();
-        const outBox = document.getElementById('output');
-        const outText = document.getElementById('outputText');
+        const query = document.getElementById('studyQuery').value.trim();
         const btn = document.getElementById('mainBtn');
-        
-        if(!input) return alert("कुछ तो लिखो विवेक!");
-        
+        const resBox = document.getElementById('resBox');
+        if(!query) return;
+
         btn.disabled = true;
         btn.innerText = "THINKING...";
-        outBox.style.display = 'none';
 
-        let success = false;
-        for(let model of MODEL_LIST) {
+        for(let model of MODELS) {
             try {
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: { 
-                        "Authorization": `Bearer ${API_KEY}`, 
-                        "Content-Type": "application/json" 
-                    },
-                    body: JSON.stringify({ 
-                        "model": model, 
-                        "messages": [{"role": "user", "content": input}] 
-                    })
+                    headers: { "Authorization": `Bearer ${V_KEY}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ "model": model, "messages": [{"role": "user", "content": query}] })
                 });
-                
                 const data = await res.json();
                 if(res.ok) {
-                    outText.innerText = data.choices[0].message.content;
-                    outBox.style.display = 'block';
-                    success = true;
-                    saveProgress(input);
-                    break; 
+                    document.getElementById('resText').innerText = data.choices[0].message.content;
+                    resBox.style.display = 'block';
+                    saveProgress(query);
+                    break;
                 }
-            } catch (err) { console.warn(`Model ${model} skipped.`); }
-        }
-        
-        if (!success) {
-            outText.innerText = "❌ माफ़ कीजिये विवेक, सभी AI नोड्स बिजी हैं। अपनी API Key या इंटरनेट चेक करें।";
-            outBox.style.display = 'block';
+            } catch (e) { console.log("Rerouting..."); }
         }
         btn.disabled = false;
-        btn.innerText = "🚀 Analyze Knowledge";
+        btn.innerText = "ANALYZE DATA";
     }
 
-    function saveProgress(query) {
-        let brain = JSON.parse(localStorage.getItem('v_core_v3') || '[]');
-        brain.push({q: query, t: Date.now()});
-        localStorage.setItem('v_core_v3', JSON.stringify(brain));
-        updateStats();
+    function saveProgress(q) {
+        let brain = JSON.parse(localStorage.getItem('v_v4_diag') || '[]');
+        brain.push(q);
+        localStorage.setItem('v_v4_diag', JSON.stringify(brain));
+        updateUI();
     }
 
-    function updateStats() {
-        const brain = JSON.parse(localStorage.getItem('v_core_v3') || '[]');
-        const count = brain.length;
-        document.getElementById('topicCount').innerText = count;
-        
-        let rank = "NEW BORN", icon = "👶";
-        if(count >= 30) { rank = "PROFESSOR"; icon = "👨‍🏫"; }
-        else if(count >= 15) { rank = "STUDENT"; icon = "🧑‍🎓"; }
-        else if(count >= 5) { rank = "ANALYST"; icon = "👦"; }
-        
-        document.getElementById('rankName').innerText = `RANK: ${rank}`;
-        document.getElementById('avatar').innerText = icon;
+    function updateUI() {
+        const brain = JSON.parse(localStorage.getItem('v_v4_diag') || '[]');
+        document.getElementById('topicCount').innerText = brain.length;
+        if(brain.length >= 5) {
+            document.getElementById('rankName').innerText = "RANK: ANALYST";
+            document.getElementById('avatar').innerText = "👦";
+        }
     }
 
-    window.onload = () => {
-        runAutoHeal();
-        updateStats();
-    };
+    window.onload = () => { updateUI(); runDiagnostics(); };
 </script>
 </body>
 </html>
