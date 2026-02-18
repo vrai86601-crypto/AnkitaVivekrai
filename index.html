@@ -3,220 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivek Study Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>🌍 Vivek Global AI Teacher + Translator</title>
     <style>
-        /* विवेक की पसंदीदा Black & Red थीम */
-        :root {
-            --bg: #000000;
-            --card-bg: #121212;
-            --primary: #ff0000;
-            --text: #ffffff;
-            --gray: #888888;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 0 20px;
-        }
-
-        h1 {
-            color: var(--primary);
-            font-size: 2rem;
-            margin: 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 5px solid var(--primary);
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.1);
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #1a1a1a;
-            color: white;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--primary); }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        button:active { transform: scale(0.98); }
-
-        .note-item {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            border-bottom: 1px solid #333;
-        }
-
-        .note-header {
-            display: flex;
-            justify-content: space-between;
-            color: var(--primary);
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-        }
-
-        footer {
-            margin-top: 30px;
-            font-size: 0.8rem;
-            color: var(--gray);
-            text-align: center;
-            padding-bottom: 20px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            h1 { font-size: 1.5rem; }
-        }
+        :root { --red: #ff0000; --gold: #ffd700; --black: #0a0a0a; --card: #161616; }
+        body { background: var(--black); color: white; font-family: 'Segoe UI', sans-serif; padding: 15px; text-align: center; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { background: linear-gradient(to right, var(--red), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2em; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border-left: 5px solid var(--red); margin-bottom: 15px; text-align: left; box-shadow: 0 5px 20px rgba(255,0,0,0.2); }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; color: white; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--red); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .note-item { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 10px; border-bottom: 2px solid var(--gold); }
+        .badge { background: var(--gold); color: black; padding: 2px 8px; border-radius: 10px; font-size: 0.7em; font-weight: bold; }
+        .lang-selector { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .lang-selector select { flex: 1; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>VIVEK STUDY PORTAL</h1>
-            <p id="welcome-msg" style="color: var(--gray);">नमस्ते! अपनी पढ़ाई का हिसाब रखें।</p>
-        </header>
+<div class="container">
+    <h1>🌍 GLOBAL AI TEACHER + TRANSLATOR</h1>
+    <p style="color: #888;">Nursery to PhD | NEET | JEE | Govt Exams | Any Language</p>
 
-        <div id="login-section" class="card">
-            <h3>अपना नाम लिखें</h3>
-            <input type="text" id="user-name" placeholder="आपका नाम...">
-            <button onclick="startApp()">शुरू करें</button>
+    <div id="setup-box" class="card">
+        <h3>अपनी पहचान सेट करें</h3>
+        <input type="text" id="user-name" placeholder="आपका नाम लिखें...">
+        
+        <select id="country-select">
+            <option value="Global">📍 देश चुनें (Select Country)</option>
+            <option value="India">India 🇮🇳</option>
+            <option value="USA">USA 🇺🇸</option>
+            <option value="UK">UK 🇬🇧</option>
+            <option value="Canada">Canada 🇨🇦</option>
+            <option value="Australia">Australia 🇦🇺</option>
+            <option value="Japan">Japan 🇯🇵</option>
+            <option value="Other">Other Country</option>
+        </select>
+
+        <select id="level-select">
+            <option value="General">🎓 शिक्षा का स्तर (Education Level)</option>
+            <optgroup label="School">
+                <option value="KG to 5">KG to Class 5</option>
+                <option value="Class 6 to 12">Class 6 to 12</option>
+                <option value="NEET/JEE">NEET / JEE Aspirant</option>
+            </optgroup>
+            <optgroup label="College">
+                <option value="University/DU">University Student (DU/Shivaji)</option>
+                <option value="PhD/Research">PhD / Research</option>
+            </optgroup>
+            <optgroup label="Jobs">
+                <option value="RRB/SSC">Railway / SSC / Govt Exam</option>
+                <option value="Tech/Coding">Software & Coding</option>
+            </optgroup>
+        </select>
+        
+        <!-- नया Language Selector -->
+        <div class="lang-selector">
+            <select id="language-select">
+                <option value="auto">🌐 भाषा चुनें (Choose Language)</option>
+                <option value="Hindi" selected>हिन्दी (Hindi)</option>
+                <option value="English">English</option>
+                <option value="Spanish">Español (Spanish)</option>
+                <option value="French">Français (French)</option>
+                <option value="German">Deutsch (German)</option>
+                <option value="Chinese">中文 (Chinese)</option>
+                <option value="Arabic">العربية (Arabic)</option>
+                <option value="Russian">Русский (Russian)</option>
+                <option value="Portuguese">Português (Portuguese)</option>
+                <option value="Japanese">日本語 (Japanese)</option>
+            </select>
         </div>
 
-        <div id="main-section" style="display: none;">
-            <div class="card">
-                <h3>📝 नए नोट्स / सवाल</h3>
-                <input type="text" id="note-title" placeholder="विषय (जैसे: NTPC Maths)">
-                <textarea id="note-text" rows="4" placeholder="यहाँ विस्तार से लिखें..."></textarea>
-                <button onclick="addNote()">सेव करें</button>
-            </div>
-
-            <h3 style="margin-left: 10px; color: var(--primary);">📂 आपके सेव किए गए नोट्स</h3>
-            <div id="notes-display"></div>
-
-            <button onclick="logout()" style="background: transparent; border: 1px solid var(--gray); color: var(--gray); margin-top: 20px; font-size: 12px;">अकाउंट बदलें / डेटा साफ़ करें</button>
-        </div>
-
-        <footer>
-            Developed by Vivek Rai <br> Shivaji College (Maths Dept)
-        </footer>
+        <button onclick="saveSetup()">पढ़ाई शुरू करें</button>
     </div>
 
-    <script>
-        // Logic for Data Management
-        window.onload = () => {
-            const savedName = localStorage.getItem('v_user');
-            if (savedName) {
-                renderDashboard(savedName);
-            }
-        };
+    <div id="study-portal" style="display:none;">
+        <div class="card">
+            <h4 id="welcome-txt">नमस्ते!</h4>
+            <textarea id="ai-input" rows="4" placeholder="दुनिया का कोई भी सवाल यहाँ पूछें..."></textarea>
+            <button onclick="askWorldAI()" id="ask-btn">AI टीचर से पूछें</button>
+        </div>
 
-        function startApp() {
-            const name = document.getElementById('user-name').value.trim();
-            if (name === "") return alert("कृपया अपना नाम लिखें!");
-            localStorage.setItem('v_user', name);
-            renderDashboard(name);
-        }
+        <h3 style="color: var(--gold);">📂 आपकी ग्लोबल लर्निंग हिस्ट्री</h3>
+        <div id="history"></div>
+    </div>
+</div>
 
-        function renderDashboard(name) {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('main-section').style.display = 'block';
-            document.getElementById('welcome-msg').innerText = `नमस्ते, ${name}!`;
-            displayNotes();
-        }
+<script>
+    // ⚠️ चेतावनी: API Key को सार्वजनिक रिपॉजिटरी में न रखें। यह केवल डेमो के लिए है।
+    const API_KEY = "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";
 
-        function addNote() {
-            const title = document.getElementById('note-title').value.trim();
-            const text = document.getElementById('note-text').value.trim();
-            
-            if (!title || !text) return alert("दोनों खाली न छोड़ें!");
+    function saveSetup() {
+        const name = document.getElementById('user-name').value;
+        const country = document.getElementById('country-select').value;
+        const level = document.getElementById('level-select').value;
+        const language = document.getElementById('language-select').value;
 
-            let notes = JSON.parse(localStorage.getItem('v_data') || "[]");
-            notes.unshift({
-                title: title,
-                body: text,
-                time: new Date().toLocaleDateString()
+        if(!name) return alert("नाम लिखें!");
+        
+        localStorage.setItem('v_name', name);
+        localStorage.setItem('v_country', country);
+        localStorage.setItem('v_level', level);
+        localStorage.setItem('v_language', language);  // भाषा सेव करें
+        
+        renderUI();
+    }
+
+    function renderUI() {
+        const name = localStorage.getItem('v_name');
+        const country = localStorage.getItem('v_country');
+        const level = localStorage.getItem('v_level');
+        const language = localStorage.getItem('v_language') || 'Hindi';
+
+        document.getElementById('setup-box').style.display = 'none';
+        document.getElementById('study-portal').style.display = 'block';
+        document.getElementById('welcome-txt').innerHTML = `नमस्ते <b>${name}</b> | <span class="badge">${country}</span> | <span class="badge">${level}</span> | <span class="badge">${language}</span>`;
+        loadLogs();
+    }
+
+    async function askWorldAI() {
+        const input = document.getElementById('ai-input').value;
+        const btn = document.getElementById('ask-btn');
+        const country = localStorage.getItem('v_country');
+        const level = localStorage.getItem('v_level');
+        const language = localStorage.getItem('v_language') || 'Hindi';
+
+        if(!input) return;
+
+        btn.innerText = "टीचर जवाब ढूंढ रहा है... 🚀";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-exp:free",
+                    "messages": [
+                        {
+                            "role": "system", 
+                            "content": `You are a Global AI Teacher. Student is from ${country} and studying at ${level} level. Answer according to their specific curriculum and country context. IMPORTANT: You must respond in the ${language} language only. Use Hinglish only if language is Hindi, otherwise use pure ${language}.`
+                        },
+                        {"role": "user", "content": input}
+                    ]
+                })
             });
 
-            localStorage.setItem('v_data', JSON.stringify(notes));
-            
-            // Clear inputs
-            document.getElementById('note-title').value = "";
-            document.getElementById('note-text').value = "";
-            
-            displayNotes();
-        }
+            const data = await response.json();
+            const answer = data.choices[0].message.content;
 
-        function displayNotes() {
-            const notes = JSON.parse(localStorage.getItem('v_data') || "[]");
-            const display = document.getElementById('notes-display');
-            
-            if (notes.length === 0) {
-                display.innerHTML = "<p style='text-align:center; opacity:0.5;'>कोई नोट्स नहीं मिले।</p>";
-                return;
-            }
-
-            display.innerHTML = notes.map(n => `
-                <div class="note-item">
-                    <div class="note-header">
-                        <span>${n.time}</span>
-                    </div>
-                    <strong style="display:block; margin-bottom:5px; font-size:1.1rem;">${n.title}</strong>
-                    <p style="margin:0; font-size:0.9rem; color:#ccc; line-height:1.4;">${n.body}</p>
-                </div>
-            `).join("");
+            saveLog(input, answer);
+            document.getElementById('ai-input').value = "";
+        } catch (e) {
+            alert("Connection Error! Check API key or network.");
+        } finally {
+            btn.innerText = "AI टीचर से पूछें";
+            btn.disabled = false;
         }
+    }
 
-        function logout() {
-            if (confirm("क्या आप सारा डेटा हटाना चाहते हैं?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-    </script>
+    function saveLog(q, a) {
+        let logs = JSON.parse(localStorage.getItem('v_world_logs') || "[]");
+        logs.unshift({ q, a, date: new Date().toLocaleString() });
+        localStorage.setItem('v_world_logs', JSON.stringify(logs));
+        loadLogs();
+    }
+
+    function loadLogs() {
+        const logs = JSON.parse(localStorage.getItem('v_world_logs') || "[]");
+        document.getElementById('history').innerHTML = logs.map(l => `
+            <div class="note-item">
+                <small style="color:var(--gold);">${l.date}</small>
+                <p><b>सवाल:</b> ${l.q}</p>
+                <p><b>जवाब:</b> ${l.a}</p>
+            </div>
+        `).join("");
+    }
+
+    window.onload = () => {
+        if(localStorage.getItem('v_name')) renderUI();
+    }
+</script>
+
 </body>
 </html>
