@@ -3,268 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Portal – स्मार्ट पढ़ाई का नया तरीका</title>
-
-    <!-- फॉन्ट और आइकॉन -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Devanagari:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Firebase (कॉम्पैट) -->
+    <title>AI Study Portal - Smart Learning</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #e31e24;
-            --primary-dark: #b8141a;
+        :root { 
+            --primary: #e31e24; 
+            --primary-dark: #b71c1c;
+            --accent: #00d4ff; 
             --dark: #0b0b0b;
-            --card-bg: rgba(20, 20, 20, 0.85);
-            --text: #ffffff;
-            --input-bg: rgba(255, 255, 255, 0.08);
-            --border-light: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255,255,255,0.05);
+            --border: #333;
         }
-
-        body {
-            font-family: 'Poppins', 'IBM Plex Sans Devanagari', sans-serif;
-            background: linear-gradient(145deg, #0f0f0f 0%, #1a1a1a 100%);
-            color: var(--text);
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%); 
+            color: white; 
+            min-height: 100vh; 
+            line-height: 1.6;
+        }
+        
+        /* Mobile-First Auth Screen */
+        .auth-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding: 16px;
+            padding: 20px;
             position: relative;
-            backdrop-filter: blur(2px);
         }
-
-        /* ग्लासमॉर्फिज्म कार्ड */
-        .auth-box {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-light);
-            border-radius: 32px;
-            padding: 36px 28px;
+        
+        .auth-box { 
+            background: rgba(20, 20, 20, 0.95); 
+            padding: 40px 30px; 
+            border-radius: 25px; 
+            border: 1px solid var(--border); 
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(227, 30, 36, 0.2) inset;
-            transition: transform 0.3s ease;
+            max-width: 420px; 
+            text-align: center; 
+            box-shadow: 0 25px 80px rgba(0,0,0,0.6); 
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
         }
-
-        .auth-box:hover {
-            transform: translateY(-5px);
+        
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
         }
-
-        h2 {
-            color: var(--primary);
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 5px rgba(227, 30, 36, 0.3);
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
         }
-
-        .subhead {
-            color: #aaa;
-            font-size: 15px;
-            margin-bottom: 28px;
-            border-bottom: 1px dashed #333;
-            padding-bottom: 16px;
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-        .form-input {
-            width: 100%;
-            padding: 15px 18px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-light);
-            border-radius: 40px;
-            color: white;
-            font-size: 15px;
-            outline: none;
+        
+        .form-input { 
+            width: 100%; 
+            padding: 15px 20px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            border: 2px solid #333; 
+            background: #1a1a1a; 
+            color: white; 
+            font-size: 16px; 
             transition: all 0.3s;
-            margin-bottom: 16px;
-            backdrop-filter: blur(5px);
         }
-
-        .form-input:focus {
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
+        
+        .form-input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.1);
+            transform: translateY(-2px);
         }
-
-        .form-input::placeholder {
-            color: #888;
-            font-weight: 300;
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), #c01a20);
-            border: none;
-            border-radius: 40px;
-            color: white;
-            font-weight: 600;
+        
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 700; 
             font-size: 16px;
-            cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(227, 30, 36, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            letter-spacing: 0.3px;
-        }
-
-        .btn-main:hover {
-            background: linear-gradient(135deg, #c01a20, var(--primary));
-            transform: scale(1.02);
-            box-shadow: 0 12px 28px rgba(227, 30, 36, 0.6);
-        }
-
-        .btn-google {
-            width: 100%;
-            padding: 14px;
-            background: white;
-            border: none;
-            border-radius: 40px;
-            color: #2c3e50;
-            font-weight: 600;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-top: 18px;
-            transition: 0.3s;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            gap: 10px;
+            margin: 8px 0;
         }
-
+        
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(227, 30, 36, 0.5);
+        }
+        
+        .btn-google { 
+            background: white; 
+            color: #333; 
+            border: 2px solid #ddd;
+        }
+        
         .btn-google:hover {
-            background: #f8f8f8;
-            transform: scale(1.02);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+            background: #f5f5f5;
+            transform: translateY(-2px);
         }
-
-        .toggle-text {
-            margin-top: 24px;
-            font-size: 15px;
+        
+        .btn-guest { 
+            background: transparent; 
+            color: var(--accent); 
+            border: 2px solid var(--accent); 
+        }
+        
+        .btn-guest:hover { 
+            background: var(--accent); 
+            color: #0f0f0f; 
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
             color: #aaa;
+            border: 2px solid #555;
+            font-size: 14px;
+            padding: 12px;
         }
-
+        
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .hidden { display: none !important; }
+        
+        .divider { 
+            color: #666; 
+            margin: 25px 0; 
+            font-size: 14px; 
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .divider::before, .divider::after { 
+            content: ''; 
+            flex: 1;
+            height: 1px; 
+            background: linear-gradient(90deg, transparent, #444, transparent); 
+        }
+        
+        .toggle-text {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 15px;
+        }
+        
         .toggle-text a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            border-bottom: 1px dotted var(--primary);
-            padding-bottom: 2px;
+            cursor: pointer;
         }
-
+        
         .toggle-text a:hover {
-            color: #ff4d4d;
+            text-decoration: underline;
         }
-
-        .hidden {
+        
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #ff6b6b;
+            display: none;
+        }
+        
+        .success-msg {
+            color: #51cf66;
+            font-size: 14px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #51cf66;
             display: none;
         }
 
-        /* वेलकम स्क्रीन */
-        #welcomeScreen {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            padding: 48px 36px;
-            border-radius: 40px;
-            border: 1px solid var(--border-light);
-            text-align: center;
-            max-width: 480px;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.7);
+        /* Dashboard Styles */
+        .dashboard { 
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease;
         }
-
-        #welcomeScreen h1 {
-            font-size: 38px;
+        
+        .dashboard.active { display: block; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px 30px; 
+            background: rgba(255,255,255,0.03); 
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        
+        .user-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        
+        .avatar { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 20px; 
+            font-weight: bold;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .guest-avatar {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+        
+        .guest-badge { 
+            background: linear-gradient(135deg, #ff9800, #f57c00); 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 11px; 
+            margin-left: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-logout { 
+            background: rgba(255,255,255,0.1); 
+            color: white; 
+            border: 1px solid #444;
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            cursor: pointer; 
             font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 12px;
+            transition: all 0.3s;
         }
-
-        #welcomeScreen p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            color: #ccc;
-        }
-
-        #logoutBtn {
-            width: auto;
-            padding: 12px 30px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid var(--primary);
-            border-radius: 40px;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        #logoutBtn:hover {
-            background: var(--primary);
+        
+        .btn-logout:hover { 
+            background: rgba(255,255,255,0.2);
             border-color: var(--primary);
+            color: var(--primary);
         }
-
-        /* छोटे डिवाइस */
-        @media (max-width: 450px) {
-            .auth-box { padding: 28px 18px; }
-            h2 { font-size: 28px; }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .welcome-text {
+            margin-bottom: 30px;
+        }
+        
+        .welcome-text h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-text p {
+            color: #aaa;
+            font-size: 18px;
+        }
+        
+        .upgrade-banner { 
+            background: linear-gradient(135deg, rgba(227, 30, 36, 0.9), rgba(183, 28, 28, 0.9)); 
+            padding: 25px; 
+            border-radius: 20px; 
+            margin-bottom: 30px; 
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: none;
+            animation: slideDown 0.5s ease;
+        }
+        
+        .upgrade-banner.show { display: block; }
+        
+        @keyframes slideDown { 
+            from { transform: translateY(-20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+        
+        .upgrade-banner h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .upgrade-banner p {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            transition: all 0.3s; 
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-icon { 
+            font-size: 48px; 
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        
+        .card h3 { 
+            margin: 0 0 12px 0; 
+            color: white;
+            font-size: 22px;
+        }
+        
+        .card p { 
+            color: #999; 
+            margin: 0; 
+            font-size: 15px; 
+            line-height: 1.6; 
+        }
+        
+        .progress-section {
+            margin-top: 20px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background: #222; 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--primary), var(--accent)); 
+            width: 0%; 
+            transition: width 1s ease;
+            border-radius: 10px;
+        }
+        
+        .timer { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: rgba(0,0,0,0.9); 
+            padding: 12px 24px; 
+            border-radius: 30px; 
+            border: 2px solid var(--primary); 
+            font-family: 'Courier New', monospace; 
+            font-size: 18px; 
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timer.warning {
+            border-color: #ff9800;
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+        
+        .timer.danger {
+            border-color: #ff0000;
+            color: #ff0000;
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .feature-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .feature-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 25px;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .modal-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .modal-content p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .close-modal {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-box { padding: 30px 20px; }
+            .header { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .welcome-text h1 { font-size: 24px; }
+            .grid { grid-template-columns: 1fr; }
+            .timer { top: auto; bottom: 20px; right: 20px; font-size: 16px; }
+            .container { padding: 20px; }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn.loading .spinner {
+            display: inline-block;
+        }
+        
+        .btn.loading .btn-text {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- लॉगिन / साइनअप कार्ड -->
-    <div class="auth-box" id="authScreen">
-        <h2 id="title">लॉगिन करें</h2>
-        <div class="subhead">AI Study Portal में आपका स्वागत है</div>
-
-        <!-- लॉगिन फॉर्म -->
-        <div id="loginSection">
-            <input type="email" id="email" class="form-input" placeholder="ईमेल" autocomplete="email">
-            <input type="password" id="password" class="form-input" placeholder="पासवर्ड" autocomplete="current-password">
-            <button class="btn-main" id="loginBtn">लॉगिन करें <i class="fas fa-arrow-right" style="margin-left:8px;"></i></button>
-        </div>
-
-        <!-- साइनअप फॉर्म (शुरू में छिपा) -->
-        <div id="signupSection" class="hidden">
-            <input type="text" id="s-name" class="form-input" placeholder="पूरा नाम" autocomplete="name">
-            <input type="email" id="s-email" class="form-input" placeholder="ईमेल" autocomplete="email">
-            <input type="password" id="s-password" class="form-input" placeholder="पासवर्ड (कम से कम 6 अक्षर)" autocomplete="new-password">
-            <button class="btn-main" id="signupBtn">खाता बनाएँ <i class="fas fa-user-plus" style="margin-left:8px;"></i></button>
-        </div>
-
-        <!-- Google बटन (सीधा फंक्शन कॉल) -->
-        <button class="btn-google" id="googleBtn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google">
-            Google से जुड़ें
-        </button>
-
-        <!-- टॉगल लिंक (लॉगिन ↔ साइनअप) -->
-        <p class="toggle-text" id="toggleText">
-            खाता नहीं है? <a href="javascript:void(0)" id="toggleLink" style="color:var(--primary);">रजिस्टर करें</a>
-        </p>
+    <!-- Guest Timer -->
+    <div id="guestTimer" class="timer hidden">
+        <span>⏱️</span>
+        <span id="timeLeft">30:00</span>
     </div>
 
-    <!-- वेलकम स्क्रीन (लॉगिन के बाद) -->
-    <div id="welcomeScreen" class="hidden">
-        <h1>नमस्ते, <span id="userNameDisplay">छात्र</span>! 👋</h1>
-        <p>आपकी पढ़ाई के लिए AI तैयार है। <br> जल्द ही स्मार्ट स्टडी टूल्स लॉन्च होंगे।</p>
-        <button class="btn-main" id="logoutBtn" style="width:auto; padding:10px 30px;">लॉगआउट</button>
+    <!-- Auth Screen -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-box" id="authScreen">
+            <div class="logo">🎓</div>
+            <h2 style="font-size: 28px; margin-bottom: 8px;">AI Study Portal</h2>
+            <p style="color: #888; margin-bottom: 25px; font-size: 16px;">स्मार्ट लर्निंग का नया युग</p>
+
+            <div id="errorMsg" class="error-msg"></div>
+            <div id="successMsg" class="success-msg"></div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <button class="btn btn-google" id="googleBtn" type="button">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20"> 
+                    <span class="btn-text">Google से जुड़ें</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="divider">या ईमेल से</div>
+
+                <input type="email" id="email" class="form-input" placeholder="📧 ईमेल एड्रेस">
+                <input type="password" id="password" class="form-input" placeholder="🔒 पासवर्ड">
+                
+                <button class="btn btn-primary" id="loginBtn" type="button">
+                    <span class="btn-text">लॉगिन करें</span>
+                    <div class="spinner"></div>
+                </button>
+                
+                <button class="btn btn-secondary" id="showRegisterBtn" type="button">
+                    नया खाता बनाएं
+                </button>
+
+                <div class="divider">या</div>
+
+                <button class="btn btn-guest" id="guestBtn" type="button">
+                    <span class="btn-text">🚀 बिना लॉगिन जारी रखें</span>
+                </button>
+                
+                <p style="margin-top: 20px; color: #666; font-size: 13px; line-height: 1.5;">
+                    🕐 गेस्ट मोड: 30 मिनट मुफ्त<br>
+                    ⭐ लॉगिन करें: अनलिमिटेड एक्सेस
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <h3 style="margin-bottom: 20px; color: var(--accent);">नया खाता बनाएं</h3>
+                
+                <input type="text" id="regName" class="form-input" placeholder="👤 पूरा नाम">
+                <input type="email" id="regEmail" class="form-input" placeholder="📧 ईमेल एड्रेस">
+                <input type="password" id="regPassword" class="form-input" placeholder="🔒 पासवर्ड (6 अक्षर से ज्यादा)">
+                <input type="password" id="regConfirmPassword" class="form-input" placeholder="🔒 पासवर्ड दोहराएं">
+                
+                <button class="btn btn-primary" id="registerBtn" type="button">
+                    <span class="btn-text">रजिस्टर करें</span>
+                    <div class="spinner"></div>
+                </button>
+                
+                <p class="toggle-text">
+                    पहले से खाता है? <a id="showLoginBtn">लॉगिन करें</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">👤</div>
+                <div>
+                    <h3 style="margin: 0; font-size: 20px;">
+                        नमस्ते, <span id="userNameDisplay">छात्र</span>!
+                        <span id="guestBadge" class="guest-badge hidden">Guest</span>
+                    </h3>
+                    <p style="margin: 5px 0 0 0; color: #888; font-size: 14px;" id="userStatus">तैयारी शुरू करें...</p>
+                </div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">🚪 लॉगआउट</button>
+        </div>
+
+        <div class="container">
+            <div class="welcome-text">
+                <h1>आज क्या पढ़ेंगे? 📚</h1>
+                <p id="welcomeSubtext">अपनी सीखने की यात्रा जारी रखें...</p>
+            </div>
+
+            <div id="upgradeBanner" class="upgrade-banner">
+                <h3>⏰ समय समाप्त होने वाला है!</h3>
+                <p>अनलिमिटेड एक्सेस और सभी प्रीमियम फीचर्स के लिए अभी फ्री में लॉगिन करें।</p>
+                <button class="btn btn-primary" onclick="switchToLogin()" style="width: auto; padding: 12px 35px; margin: 0 auto;">
+                    अभी लॉगिन करें
+                </button>
+            </div>
+
+            <div class="grid">
+                <div class="card" onclick="openFeature('ai-tutor', 'AI ट्यूटर')">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI ट्यूटर</h3>
+                    <p>24/7 उपलब्ध आपका निजी शिक्षक। किसी भी विषय में तुरंत मदद पाएं।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openFeature('smart-notes', 'स्मार्ट नोट्स')">
+                    <div class="card-icon">📝</div>
+                    <h3>स्मार्ट नोट्स</h3>
+                    <p>AI द्वारा जनरेटेड संक्षिप्त नोट्स, माइंड मैप्स और महत्वपूर्ण बिंदु।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>60%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openFeature('practice-quiz', 'प्रैक्टिस क्विज')">
+                    <div class="card-icon">🎯</div>
+                    <h3>प्रैक्टिस क्विज</h3>
+                    <p>व्यक्तिगत अभ्यास प्रश्न, मॉक टेस्ट और तुरंत परिणाम विश्लेषण।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>40%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 40%"></div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openFeature('progress-report', 'प्रगति रिपोर्ट')">
+                    <div class="card-icon">📊</div>
+                    <h3>प्रगति रिपोर्ट</h3>
+                    <p>विस्तृत विश्लेषण, कमजोर विषयों की पहचान और सुधार योजना।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openFeature('doubt-solver', 'डाउट सॉल्वर')">
+                    <div class="card-icon">❓</div>
+                    <h3>डाउट सॉल्वर</h3>
+                    <p>फोटो खींचें या टाइप करें, AI तुरंत समाधान देगा।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 30%"></div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openFeature('study-planner', 'स्टडी प्लानर')">
+                    <div class="card-icon">📅</div>
+                    <h3>स्टडी प्लानर</h3>
+                    <p>AI द्वारा बनाया गया आपके लिए परफेक्ट टाइमटेबल और रिमाइंडर।</p>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>प्रगति</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 90%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Modal -->
+    <div id="featureModal" class="feature-modal">
+        <div class="modal-content">
+            <div style="font-size: 60px; margin-bottom: 20px;" id="modalIcon">🚀</div>
+            <h2 id="modalTitle">फीचर का नाम</h2>
+            <p id="modalDesc">यह फीचर जल्द ही उपलब्ध होगा...</p>
+            <button class="close-modal" onclick="closeModal()">ठीक है</button>
+        </div>
     </div>
 
     <script>
-        // ---------- Firebase Config (तुम्हारी अपनी चाबी) ----------
+        // ==========================================
+        // 1. FIREBASE CONFIGURATION
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCVaemlk94fyisQOD0y7XaR2J8sR7vrosw",
             authDomain: "ankita-3118d.firebaseapp.com",
@@ -273,115 +753,426 @@
             messagingSenderId: "20444353775",
             appId: "1:20444353775:web:e76d8677769a3cb64d771a"
         };
-
+        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ---------- Auth State Observer ----------
-        auth.onAuthStateChanged((user) => {
-            const authScreen = document.getElementById('authScreen');
-            const welcomeScreen = document.getElementById('welcomeScreen');
-            const userNameSpan = document.getElementById('userNameDisplay');
+        // ==========================================
+        // 2. GLOBAL STATE MANAGEMENT
+        // ==========================================
+        let isGuest = false;
+        let guestTimer = null;
+        let timeLeft = 30 * 60; // 30 minutes
+        let currentUser = null;
 
-            if (user) {
-                authScreen.classList.add('hidden');
-                welcomeScreen.classList.remove('hidden');
-                // Display name या email का पहला भाग दिखाएँ
-                const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'छात्र');
-                userNameSpan.innerText = displayName;
+        // ==========================================
+        // 3. UI HELPERS
+        // ==========================================
+        function showError(msg) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+        }
+
+        function showSuccess(msg) {
+            const successDiv = document.getElementById('successMsg');
+            successDiv.textContent = msg;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 3000);
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) {
+                btn.classList.add('loading');
+                btn.disabled = true;
             } else {
-                authScreen.classList.remove('hidden');
-                welcomeScreen.classList.add('hidden');
+                btn.classList.remove('loading');
+                btn.disabled = false;
             }
-        });
+        }
 
-        // ---------- ईमेल/पासवर्ड लॉगिन ----------
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value;
-            if (!email || !pass) {
-                alert('कृपया ईमेल और पासवर्ड भरें');
-                return;
+        function toggleForms(showRegister) {
+            if (showRegister) {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            } else {
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
             }
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-            } catch (error) {
-                alert('लॉगिन गलती: ' + error.message);
-            }
-        });
+        }
 
-        // ---------- ईमेल/पासवर्ड साइनअप ----------
-        document.getElementById('signupBtn').addEventListener('click', async () => {
-            const name = document.getElementById('s-name').value.trim();
-            const email = document.getElementById('s-email').value.trim();
-            const pass = document.getElementById('s-password').value;
-            if (!name || !email || !pass) {
-                alert('कृपया सभी फ़ील्ड भरें');
-                return;
-            }
-            if (pass.length < 6) {
-                alert('पासवर्ड कम से कम 6 अक्षर का होना चाहिए');
-                return;
-            }
-            try {
-                const res = await auth.createUserWithEmailAndPassword(email, pass);
-                // Firestore में नाम सेव करें
-                await db.collection('students').doc(res.user.uid).set({
-                    Name: name,
-                    Email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                // अगर चाहो तो displayName भी अपडेट कर सकते हो
-                await res.user.updateProfile({ displayName: name });
-            } catch (error) {
-                alert('साइनअप गलती: ' + error.message);
-            }
-        });
-
-        // ---------- Google लॉगिन (बिल्कुल सही तरीका) ----------
-        document.getElementById('googleBtn').addEventListener('click', async () => {
+        // ==========================================
+        // 4. AUTHENTICATION HANDLERS
+        // ==========================================
+        
+        // Google Login
+        document.getElementById('googleBtn').onclick = async () => {
+            setLoading('googleBtn', true);
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
-                // सफल लॉगिन के बाद onAuthStateChanged अपने आप वेलकम स्क्रीन दिखा देगा
             } catch (error) {
-                alert('Google लॉगिन गलती: ' + error.message);
-                // अगर यह एरर आए कि ऑपरेशन अलाउड नहीं है, तो Firebase कंसोल में Google Auth चेक करें
+                console.error("Google Login Error:", error);
+                let msg = "लॉगिन विफल: ";
+                if (error.code === 'auth/popup-blocked') msg += "पॉपअप ब्लॉक हो गया। कृपया अनुमति दें।";
+                else if (error.code === 'auth/cancelled-popup-request') msg = ""; // User cancelled
+                else if (error.code === 'auth/unauthorized-domain') {
+                    msg += "यह डोमेन अधिकृत नहीं है। Firebase Console में जोड़ें।";
+                }
+                else msg += error.message;
+                if (msg) showError(msg);
+            } finally {
+                setLoading('googleBtn', false);
             }
-        });
+        };
 
-        // ---------- लॉगआउट ----------
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            auth.signOut();
-        });
+        // Email Login with Proper Validation
+        document.getElementById('loginBtn').onclick = async () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            
+            // Validation
+            if (!email || !pass) {
+                showError("कृपया ईमेल और पासवर्ड दोनों भरें");
+                return;
+            }
+            if (!email.includes("@") || !email.includes(".")) {
+                showError("सही ईमेल एड्रेस डालें");
+                return;
+            }
+            if (pass.length < 6) {
+                showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
+                return;
+            }
 
-        // ---------- लॉगिन / साइनअप टॉगल ----------
-        const loginSection = document.getElementById('loginSection');
-        const signupSection = document.getElementById('signupSection');
-        const toggleLink = document.getElementById('toggleLink');
-        const title = document.getElementById('title');
+            setLoading('loginBtn', true);
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+                showSuccess("सफलतापूर्वक लॉगिन!");
+            } catch (error) {
+                console.error("Login Error:", error);
+                let msg = "";
+                switch(error.code) {
+                    case 'auth/wrong-password':
+                        msg = "❌ गलत पासवर्ड। कृपया फिर से प्रयास करें।";
+                        break;
+                    case 'auth/user-not-found':
+                        msg = "❌ यह ईमेल रजिस्टर्ड नहीं है। कृपया 'नया खाता बनाएं' पर क्लिक करें।";
+                        break;
+                    case 'auth/invalid-email':
+                        msg = "❌ अमान्य ईमेल एड्रेस।";
+                        break;
+                    case 'auth/user-disabled':
+                        msg = "❌ यह खाता निष्क्रिय कर दिया गया है।";
+                        break;
+                    case 'auth/too-many-requests':
+                        msg = "⚠️ बहुत सारे प्रयास। कृपया बाद में कोशिश करें।";
+                        break;
+                    default:
+                        msg = "❌ त्रुटि: " + error.message;
+                }
+                showError(msg);
+            } finally {
+                setLoading('loginBtn', false);
+            }
+        };
 
-        toggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            const isLoginVisible = !loginSection.classList.contains('hidden');
+        // Registration with Confirm Password
+        document.getElementById('registerBtn').onclick = async () => {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPassword').value;
+            const confirmPass = document.getElementById('regConfirmPassword').value;
 
-            if (isLoginVisible) {
-                // अभी लॉगिन दिख रहा है → साइनअप दिखाएँ
-                loginSection.classList.add('hidden');
-                signupSection.classList.remove('hidden');
-                title.innerText = 'रजिस्टर करें';
-                toggleLink.innerText = 'लॉगिन करें';
-                document.querySelector('.subhead').innerText = 'नया खाता बनाएँ और शुरू करें';
+            // Validation
+            if (!name || !email || !pass || !confirmPass) {
+                showError("कृपया सभी फील्ड भरें");
+                return;
+            }
+            if (pass !== confirmPass) {
+                showError("पासवर्ड मेल नहीं खा रहे");
+                return;
+            }
+            if (pass.length < 6) {
+                showError("पासवर्ड कम से कम 6 अक्षर का होना चाहिए");
+                return;
+            }
+
+            setLoading('registerBtn', true);
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+                // Update profile with name
+                await userCredential.user.updateProfile({ displayName: name });
+                // Save to Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isGuest: false
+                });
+                showSuccess("🎉 खाता सफलतापूर्वक बना!");
+            } catch (error) {
+                console.error("Registration Error:", error);
+                let msg = "";
+                switch(error.code) {
+                    case 'auth/email-already-in-use':
+                        msg = "⚠️ यह ईमेल पहले से रजिस्टर्ड है। लॉगिन करें।";
+                        break;
+                    case 'auth/invalid-email':
+                        msg = "❌ अमान्य ईमेल एड्रेस।";
+                        break;
+                    case 'auth/weak-password':
+                        msg = "❌ पासवर्ड बहुत कमजोर है।";
+                        break;
+                    default:
+                        msg = "❌ त्रुटि: " + error.message;
+                }
+                showError(msg);
+            } finally {
+                setLoading('registerBtn', false);
+            }
+        };
+
+        // Toggle Forms
+        document.getElementById('showRegisterBtn').onclick = () => toggleForms(true);
+        document.getElementById('showLoginBtn').onclick = () => toggleForms(false);
+
+        // ==========================================
+        // 5. GUEST MODE MANAGEMENT
+        // ==========================================
+        document.getElementById('guestBtn').onclick = () => {
+            startGuestMode(30 * 60);
+        };
+
+        function startGuestMode(seconds) {
+            isGuest = true;
+            timeLeft = seconds;
+            currentUser = { displayName: 'मेहमान', isGuest: true };
+            
+            // Save to localStorage
+            localStorage.setItem('guestSession', 'true');
+            localStorage.setItem('guestTimeLeft', timeLeft);
+            localStorage.setItem('guestStartTime', Date.now());
+            
+            showDashboard();
+            updateGuestUI();
+            startTimer();
+        }
+
+        function updateGuestUI() {
+            document.getElementById('userNameDisplay').innerText = 'मेहमान';
+            document.getElementById('userAvatar').innerText = '👤';
+            document.getElementById('userAvatar').classList.add('guest-avatar');
+            document.getElementById('guestBadge').classList.remove('hidden');
+            document.getElementById('userStatus').innerText = '🕐 30 मिनट का मुफ्त ट्रायल';
+            document.getElementById('welcomeSubtext').innerText = 'मेहमान मोड - सीमित समय तक सभी फीचर्स एक्सेस करें';
+            document.getElementById('guestTimer').classList.remove('hidden');
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            
+            guestTimer = setInterval(() => {
+                timeLeft--;
+                localStorage.setItem('guestTimeLeft', timeLeft);
+                
+                updateTimerDisplay();
+                
+                // Warnings
+                if (timeLeft === 300) { // 5 minutes
+                    document.getElementById('upgradeBanner').classList.add('show');
+                    showSuccess("⚠️ सिर्फ 5 मिनट बचे हैं! लॉगिन करें और अनलिमिटेड पाएं।");
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(guestTimer);
+                    endGuestSession();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            const timerEl = document.getElementById('timeLeft');
+            const timerContainer = document.getElementById('guestTimer');
+            
+            timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            // Visual warnings
+            if (timeLeft < 60) {
+                timerContainer.classList.add('danger');
+                timerContainer.classList.remove('warning');
+            } else if (timeLeft < 300) {
+                timerContainer.classList.add('warning');
+                timerContainer.classList.remove('danger');
             } else {
-                // साइनअप दिख रहा है → लॉगिन दिखाएँ
-                loginSection.classList.remove('hidden');
-                signupSection.classList.add('hidden');
-                title.innerText = 'लॉगिन करें';
-                toggleLink.innerText = 'रजिस्टर करें';
-                document.querySelector('.subhead').innerText = 'AI Study Portal में आपका स्वागत है';
+                timerContainer.classList.remove('warning', 'danger');
+            }
+        }
+
+        function endGuestSession() {
+            alert("⏰ समय समाप्त! अनलिमिटेड एक्सेस के लिए लॉगिन करें।");
+            logout();
+        }
+
+        // ==========================================
+        // 6. AUTH STATE OBSERVER (FIXED)
+        // ==========================================
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Real user logged in
+                isGuest = false;
+                currentUser = user;
+                clearInterval(guestTimer);
+                localStorage.removeItem('guestSession');
+                localStorage.removeItem('guestTimeLeft');
+                localStorage.removeItem('guestStartTime');
+                
+                showDashboard();
+                updateUserUI(user);
+            } else {
+                // No Firebase user
+                if (!isGuest) {
+                    // Not guest either, show auth screen
+                    showAuthScreen();
+                }
+                // If isGuest is true, keep dashboard open (handled separately)
             }
         });
+
+        function showDashboard() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        function showAuthScreen() {
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('guestTimer').classList.add('hidden');
+            document.getElementById('upgradeBanner').classList.remove('show');
+            
+            // Reset forms
+            toggleForms(false);
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function updateUserUI(user) {
+            const name = user.displayName || user.email.split('@')[0];
+            document.getElementById('userNameDisplay').innerText = name;
+            document.getElementById('userAvatar').innerText = name[0].toUpperCase();
+            document.getElementById('userAvatar').classList.remove('guest-avatar');
+            document.getElementById('guestBadge').classList.add('hidden');
+            document.getElementById('userStatus').innerText = '✅ प्रीमियम सदस्य - अनलिमिटेड एक्सेस';
+            document.getElementById('welcomeSubtext').innerText = 'सभी फीचर्स उपलब्ध हैं। आज क्या सीखेंगे?';
+            document.getElementById('guestTimer').classList.add('hidden');
+        }
+
+        // ==========================================
+        // 7. LOGOUT & CLEANUP
+        // ==========================================
+        function logout() {
+            clearInterval(guestTimer);
+            localStorage.removeItem('guestSession');
+            localStorage.removeItem('guestTimeLeft');
+            localStorage.removeItem('guestStartTime');
+            
+            isGuest = false;
+            currentUser = null;
+            
+            // Reset UI elements
+            document.getElementById('upgradeBanner').classList.remove('show');
+            document.getElementById('guestTimer').classList.remove('warning', 'danger');
+            
+            auth.signOut();
+        }
+
+        document.getElementById('logoutBtn').onclick = logout;
+
+        function switchToLogin() {
+            logout();
+            setTimeout(() => {
+                document.getElementById('email').focus();
+            }, 100);
+        }
+
+        // ==========================================
+        // 8. FEATURE HANDLERS
+        // ==========================================
+        function openFeature(featureId, featureName) {
+            const modal = document.getElementById('featureModal');
+            const icons = {
+                'ai-tutor': '🤖',
+                'smart-notes': '📝',
+                'practice-quiz': '🎯',
+                'progress-report': '📊',
+                'doubt-solver': '❓',
+                'study-planner': '📅'
+            };
+            
+            document.getElementById('modalIcon').innerText = icons[featureId] || '🚀';
+            document.getElementById('modalTitle').innerText = featureName;
+            
+            let desc = "";
+            if (isGuest) {
+                const mins = Math.floor(timeLeft / 60);
+                desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n`;
+                desc += `⏱️ आपके पास ${mins} मिनट बचे हैं (Guest Mode)\n`;
+                desc += `⭐ लॉगिन करें और इसे सबसे पहले इस्तेमाल करें!`;
+            } else {
+                desc = `🎉 ${featureName} जल्द ही लाइव होगा!\n\n`;
+                desc += `✅ आप प्रीमियम यूजर हैं\n`;
+                desc += `🔔 लॉन्च होते ही आपको नोटिफिकेशन मिलेगी!`;
+            }
+            
+            document.getElementById('modalDesc').innerText = desc;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('featureModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('featureModal').onclick = (e) => {
+            if (e.target.id === 'featureModal') closeModal();
+        };
+
+        // ==========================================
+        // 9. SESSION RECOVERY
+        // ==========================================
+        window.onload = () => {
+            const savedGuest = localStorage.getItem('guestSession');
+            const savedTime = localStorage.getItem('guestTimeLeft');
+            const startTime = localStorage.getItem('guestStartTime');
+            
+            if (savedGuest === 'true' && savedTime && startTime) {
+                // Calculate elapsed time
+                const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                const remaining = parseInt(savedTime) - elapsed;
+                
+                if (remaining > 0) {
+                    startGuestMode(remaining);
+                } else {
+                    // Time expired while away
+                    localStorage.removeItem('guestSession');
+                    localStorage.removeItem('guestTimeLeft');
+                    localStorage.removeItem('guestStartTime');
+                }
+            }
+        };
+
+        // Handle back button on mobile
+        window.onbeforeunload = () => {
+            if (isGuest && timeLeft > 0) {
+                localStorage.setItem('guestTimeLeft', timeLeft);
+            }
+        };
     </script>
 </body>
 </html>
